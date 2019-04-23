@@ -1,0 +1,62 @@
+{
+  "name": "@looker/chatty",
+  "version": "1.2.7",
+  "description": "A simple postMessage host / client channel manager.",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "directories": {
+    "test": "tests"
+  },
+  "engines": {
+    "node": ">=8.6.0",
+    "npm": "5.5.1"
+  },
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf lib",
+    "lint": "tslint --project tsconfig.json --format stylish 'src/**/*.ts'",
+    "lint-fix": "tslint --fix --project tsconfig.json  --format stylish 'src/**/*.ts'",
+    "start": "webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
+    "test": "npm run lint && karma start karma.conf.js",
+    "test-once": "npm run lint && karma start karma.conf.js --single-run "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/looker/chatty.git"
+  },
+  "publishConfig": {
+    "registry": "https://nexusrepo.looker.com/repository/looker-npm-private/"
+  },
+  "author": "Looker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/looker/chatty/issues"
+  },
+  "homepage": "https://github.com/looker/chatty",
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@types/debug": "^4.1.2",
+    "@types/jasmine": "^2.8.2",
+    "babel-loader": "^8.0.5",
+    "jasmine-core": "^2.8.0",
+    "karma": "^4.0.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-typescript": "^4.0.0",
+    "karma-typescript-es6-transform": "^4.0.0",
+    "ts-loader": "^4.3.1",
+    "tslint": "^5.8.0",
+    "tslint-config-standard": "^7.0.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "tsutils": "^3.9.1",
+    "typescript": "^3.0.3",
+    "typescript-tslint-plugin": "^0.3.1",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
+  },
+  "dependencies": {
+    "debug": "^2.2.0",
+    "es6-promise": "^4.2.5"
+  }
+}

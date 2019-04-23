@@ -1,0 +1,5 @@
+.idea
+.npmrc
+demo/build
+node_modules
+coverage
