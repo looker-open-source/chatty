@@ -42,7 +42,7 @@
     "karma-typescript": "^4.0.0",
     "karma-typescript-es6-transform": "^4.0.0",
     "ts-loader": "^4.3.1",
-    "tslint": "^5.8.0",
+    "tslint": "^5.17.0",
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
     "tsutils": "^3.9.1",
