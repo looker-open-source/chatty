@@ -15,7 +15,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
@@ -52,6 +52,8 @@ export type ChattyClientConnection = {
    */
 
   send (eventName: string, ...payload: any[]): void
+
+  sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
@@ -69,6 +71,9 @@ export class ChattyClient {
   private _handlers: CallbackStore
   private _targetOrigin: string
   private _state = ChattyClientStates.Connecting
+  private _defaultTimeout: number
+  private _sequence = 0
+  private _receivers: {[key: number]: (value?: any) => void } = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
@@ -78,6 +83,7 @@ export class ChattyClient {
   constructor (builder: ChattyClientBuilder) {
     this._handlers = builder.handlers
     this._targetOrigin = builder.targetOrigin
+    this._defaultTimeout = builder.defaultTimeout
     this._channel = new MessageChannel()
   }
 
@@ -115,6 +121,19 @@ export class ChattyClient {
             resolve({
               send: (eventName: string, ...payload: any[]) => {
                 this.sendMsg(ChattyClientMessages.Message, { eventName, payload })
+              },
+
+              sendAndReceive: async (eventName: string, ...payload: any[]) => {
+                const sequence = ++this._sequence
+                this.sendMsg(ChattyClientMessages.MessageWithResponse, { eventName, payload }, sequence)
+                return new Promise<any>((resolve, reject) => {
+                  this._receivers[sequence] = resolve
+
+                  setTimeout(() => {
+                    delete this._receivers[sequence]
+                    reject(new Error('Timeout'))
+                  }, this._defaultTimeout)
+                })
               }
             })
             break
@@ -123,6 +142,21 @@ export class ChattyClient {
               this._handlers[evt.data.data.eventName].forEach(fn => fn.apply(this, evt.data.data.payload))
             }
             break
+          case ChattyHostMessages.MessageWithResponse:
+            const { eventName, payload, sequence } = evt.data.data
+            if (this._handlers[eventName]) {
+              const results = this._handlers[eventName].map(
+                fn => fn.apply(this, payload)
+              )
+              this.sendMsg(ChattyClientMessages.Response, { eventName, payload: results }, sequence)
+            }
+            break
+          case ChattyHostMessages.Response:
+            const receiver = this._receivers[evt.data.data.sequence]
+            if (receiver) {
+              delete this._receivers[evt.data.data.sequence]
+              receiver(evt.data.data.payload)
+            }
         }
       }
 
@@ -141,11 +175,9 @@ export class ChattyClient {
     this._state = ChattyClientStates.Syn
   }
 
-  private sendMsg (action: ChattyClientMessages, data: object = {}) {
+  private sendMsg (action: ChattyClientMessages, data: object = {}, sequence?: number) {
     ChattyClient._debug('sending', action, data)
-    this._channel.port1.postMessage({
-      action: action,
-      data: data
-    })
+    const sequenceData = sequence ? { sequence } : {}
+    this._channel.port1.postMessage({ action, data: { ...data, ...sequenceData } })
   }
 }

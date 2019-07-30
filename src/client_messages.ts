@@ -29,5 +29,7 @@
 export enum ChattyClientMessages {
   Syn,
   Ack,
-  Message
+  Message,
+  MessageWithResponse,
+  Response
 }

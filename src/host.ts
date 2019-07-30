@@ -52,6 +52,8 @@ export type ChattyHostConnection = {
    */
 
   send (eventName: string, ...payload: any[]): void
+
+  sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
@@ -74,6 +76,9 @@ export class ChattyHost {
   private _handlers: CallbackStore
   private _targetOrigin: string | null
   private _state = ChattyHostStates.Connecting
+  private _defaultTimeout: number
+  private _sequence = 0
+  private _receivers: {[key: number]: (value?: any) => void} = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
@@ -90,6 +95,7 @@ export class ChattyHost {
     this._handlers = builder.handlers
     this._port = null
     this._targetOrigin = builder.targetOrigin
+    this._defaultTimeout = builder.defaultTimeout
   }
 
   /**
@@ -130,6 +136,19 @@ export class ChattyHost {
               resolve({
                 send: (eventName: string, ...payload: any[]) => {
                   this.sendMsg(ChattyHostMessages.Message, { eventName, payload })
+                },
+
+                sendAndReceive: async (eventName: string, ...payload: any[]) => {
+                  const sequence = ++this._sequence
+                  this.sendMsg(ChattyHostMessages.MessageWithResponse, { eventName, payload }, sequence)
+                  return new Promise<any>((resolve, reject) => {
+                    this._receivers[sequence] = resolve
+
+                    setTimeout(() => {
+                      delete this._receivers[sequence]
+                      reject(new Error('Timeout'))
+                    }, this._defaultTimeout)
+                  })
                 }
               })
               break
@@ -138,6 +157,21 @@ export class ChattyHost {
                 this._handlers[evt.data.data.eventName].forEach(fn => fn.apply(this, evt.data.data.payload))
               }
               break
+            case ChattyClientMessages.MessageWithResponse:
+              const { eventName, payload, sequence } = evt.data.data
+              if (this._handlers[eventName]) {
+                const results = this._handlers[eventName].map(
+                  fn => fn.apply(this, payload)
+                )
+                this.sendMsg(ChattyHostMessages.Response, { eventName, payload: results }, sequence)
+              }
+              break
+            case ChattyClientMessages.Response:
+              const receiver = this._receivers[evt.data.data.sequence]
+              if (receiver) {
+                delete this._receivers[evt.data.data.sequence]
+                receiver(evt.data.data.payload)
+              }
           }
         }
 
@@ -177,13 +211,12 @@ export class ChattyHost {
     return this._connection = createConnection()
   }
 
-  private sendMsg (action: ChattyHostMessages, data: object = {}) {
+  private sendMsg (action: ChattyHostMessages, data: object = {}, sequence?: number) {
     ChattyHost._debug('port sending', action, data)
 
-    this._port!.postMessage({
-      action: action,
-      data: data
-    })
+    const sequenceData = sequence ? { sequence } : {}
+
+    this._port!.postMessage({ action, data: { ...data, ...sequenceData } })
   }
 
   // TODO: natenate

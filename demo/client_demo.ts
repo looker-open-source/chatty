@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const status = document.querySelector('#client-status')!
       status.innerHTML = msg.status
     })
+    .on(Actions.GET_TITLE, (msg: Msg) => {
+      return document.querySelector('title')!.innerText
+    })
     .withTargetOrigin(window.location.origin)
     .build()
     .connect()

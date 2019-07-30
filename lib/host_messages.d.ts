@@ -3,5 +3,7 @@
  */
 export declare enum ChattyHostMessages {
     SynAck = 0,
-    Message = 1
+    Message = 1,
+    MessageWithResponse = 2,
+    Response = 3
 }

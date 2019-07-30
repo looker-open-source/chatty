@@ -10,12 +10,14 @@ export declare class ChattyHostBuilder {
     private _sandboxAttrs;
     private _frameBorder;
     private _targetOrigin;
+    private _defaultTimeout;
     constructor(_url: string);
     readonly el: HTMLElement;
     readonly handlers: CallbackStore;
     readonly sandboxAttrs: string[];
     readonly targetOrigin: string | null;
     readonly url: string;
+    readonly defaultTimeout: number;
     /**
      * @param el the HTML element that the iframe will live inside. The iframe will be created as
      * a direct child of the element.
@@ -36,6 +38,7 @@ export declare class ChattyHostBuilder {
      * is received, and accepts any parameters that were passed with the event.
      */
     on(name: string, fn: Callback): this;
+    withDefaultTimeout(timeout: number): this;
     getFrameBorder(): string;
     frameBorder(attr: string): this;
     sandbox(attr: string): this;

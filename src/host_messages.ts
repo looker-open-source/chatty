@@ -28,5 +28,7 @@
 
 export enum ChattyHostMessages {
   SynAck,
-  Message
+  Message,
+  MessageWithResponse,
+  Response
 }

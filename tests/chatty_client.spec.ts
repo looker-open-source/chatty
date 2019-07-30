@@ -92,6 +92,17 @@ describe('ChattyClient', function () {
         data: data
       })
     })
+
+    it('should post message with data and a sequence', function () {
+      client = Chatty.createClient().build()
+      action = ChattyClientMessages.Message
+      spyOn(client._channel.port1, 'postMessage')
+      client.sendMsg(action, data, 1)
+      expect(client._channel.port1.postMessage).toHaveBeenCalledWith({
+        action: action,
+        data: { ...data, sequence: 1 }
+      })
+    })
   })
 
   describe('connect', function () {
@@ -100,7 +111,7 @@ describe('ChattyClient', function () {
 
       describe('client receives SynAck', function () {
         beforeEach(() => {
-          client = Chatty.createClient().build()
+          client = Chatty.createClient().withDefaultTimeout(100).build()
           spyOn(client, 'sendMsg')
           spyOn(client, 'initiateHandshake')
           connecting = client.connect()
@@ -119,11 +130,46 @@ describe('ChattyClient', function () {
         })
 
         it('should resolve with a host whose send function sends a message to the host', function (done) {
-          connecting.then((host) => {
-            host.send(eventName, payload)
+          connecting.then((connection) => {
+            connection.send(eventName, payload)
             expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.Message)
-            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName: eventName, payload: [payload] })
+            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
             done()
+          }).catch(console.error)
+        })
+
+        it('sendAndReceive function sends a message and returns a promise that resolves on response', function (done) {
+          connecting.then((connection) => {
+            connection.sendAndReceive(eventName, payload)
+              .then((data) => {
+                expect(data[0]).toEqual({ message: 'Hello' })
+                done()
+              })
+              .catch(console.error)
+            expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.MessageWithResponse)
+            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
+            expect(client.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
+            const sequence = client.sendMsg.calls.argsFor(1)[2]
+            client._channel.port2.postMessage({
+              action: ChattyHostMessages.Response,
+              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
+            })
+          }).catch(console.error)
+        })
+
+        it('sendAndReceive ignores invalid sequence values', function (done) {
+          connecting.then((connection) => {
+            connection.sendAndReceive(eventName, payload)
+              .then(() => void 0)
+              .catch(done)
+            expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.MessageWithResponse)
+            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
+            expect(client.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
+            const sequence = client.sendMsg.calls.argsFor(1)[2] + 100
+            client._channel.port2.postMessage({
+              action: ChattyHostMessages.Response,
+              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
+            })
           }).catch(console.error)
         })
 
@@ -187,6 +233,67 @@ describe('ChattyClient', function () {
 
             setTimeout(() => {
               expect(dance).not.toHaveBeenCalled()
+              done()
+            })
+          }).catch(console.error)
+        })
+      })
+
+      describe('client receives MessageWithResponse', function () {
+        beforeEach(() => {
+          dance = jasmine.createSpy('dance').and.returnValue({ lit: true })
+          client = Chatty.createClient()
+            .on('party', dance)
+            .build()
+
+          spyOn(client, 'initiateHandshake')
+          spyOn(client, 'sendMsg')
+
+          connecting = client.connect()
+          client._channel.port2.postMessage({
+            action: ChattyHostMessages.SynAck
+          })
+        })
+
+        it('should apply the correct event handler', function (done) {
+          connecting.then(() => {
+            client._channel.port2.postMessage({
+              action: ChattyHostMessages.MessageWithResponse,
+              data: {
+                eventName: 'party',
+                payload: {
+                  status: 'lit'
+                },
+                sequence: 1
+              }
+            })
+
+            setTimeout(() => {
+              expect(dance).toHaveBeenCalled()
+              expect(client.sendMsg).toHaveBeenCalledWith(
+                ChattyClientMessages.Response,
+                { eventName: 'party', payload: [{ lit: true }] },
+                1)
+              done()
+            })
+          }).catch(console.error)
+        })
+
+        it('should ignore unknown events', function (done) {
+          connecting.then(() => {
+            client._channel.port2.postMessage({
+              action: ChattyHostMessages.MessageWithResponse,
+              data: {
+                eventName: 'school'
+              }
+            })
+
+            setTimeout(() => {
+              expect(dance).not.toHaveBeenCalled()
+              expect(client.sendMsg).not.toHaveBeenCalledWith(
+                ChattyClientMessages.Response,
+                { eventName: 'party', payload: [{ lit: true }] },
+                1)
               done()
             })
           }).catch(console.error)

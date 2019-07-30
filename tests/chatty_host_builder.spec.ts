@@ -82,6 +82,17 @@ describe('ChattyHostBuilder', () => {
     expect(host.handlers.party).toEqual([dance, pizza])
   })
 
+  it('should not remove an on<action> handler with off if the name does not match', () => {
+    const dance = jasmine.createSpy('dance')
+    const pizza = jasmine.createSpy('pizza')
+    const host = Chatty.createHost(url)
+
+    host.on('party', dance)
+    host.on('party', pizza)
+    host.off('off', dance)
+    expect(host.handlers.party).toEqual([dance, pizza])
+  })
+
   it('should add a sandbox attribute', () => {
     const host = Chatty.createHost(url)
       .sandbox('allow-scripts')
@@ -113,5 +124,17 @@ describe('ChattyHostBuilder', () => {
     expect(host.getFrameBorder()).toEqual('1')
     expect(host.targetOrigin).toEqual('*')
     expect(host.el).toEqual(element)
+  })
+
+  describe('defaultTimeout', () => {
+    it('should default to 30 seconds', () => {
+      const host = Chatty.createHost(url)
+      expect(host.defaultTimeout).toEqual(30000)
+    })
+
+    it('should allow setting', () => {
+      const host = Chatty.createHost(url).withDefaultTimeout(100)
+      expect(host.defaultTimeout).toEqual(100)
+    })
   })
 })

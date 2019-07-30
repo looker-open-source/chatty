@@ -4,5 +4,7 @@
 export declare enum ChattyClientMessages {
     Syn = 0,
     Ack = 1,
-    Message = 2
+    Message = 2,
+    MessageWithResponse = 3,
+    Response = 4
 }

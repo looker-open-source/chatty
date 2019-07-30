@@ -6,8 +6,10 @@ import { ChattyClient } from './client';
 export declare class ChattyClientBuilder {
     private _targetOrigin;
     private _handlers;
+    private _defaultTimeout;
     readonly targetOrigin: string;
     readonly handlers: CallbackStore;
+    readonly defaultTimeout: number;
     /**
      * Removes an event handler to the client.
      *
@@ -25,6 +27,7 @@ export declare class ChattyClientBuilder {
      * @returns the client builder
      */
     on(name: string, fn: Callback): this;
+    withDefaultTimeout(timeout: number): this;
     /**
      * Optional. Sets the target origin parameter used to communicate with the host. Default
      * is '*'. If possible it should be set the the host window's origin.

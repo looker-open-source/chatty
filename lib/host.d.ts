@@ -19,6 +19,7 @@ export declare type ChattyHostConnection = {
      * object will be transferred to the client.
      */
     send(eventName: string, ...payload: any[]): void;
+    sendAndReceive(eventName: string, ...payload: any[]): Promise<any>;
 };
 /**
  * The host object for an iframe. The user should not create this object directly, it
@@ -37,6 +38,9 @@ export declare class ChattyHost {
     private _handlers;
     private _targetOrigin;
     private _state;
+    private _defaultTimeout;
+    private _sequence;
+    private _receivers;
     /**
      * @param builder The client builder that is responsible for constructing this object.
      * @hidden

@@ -35,6 +35,7 @@ export class ChattyHostBuilder {
   private _sandboxAttrs: string[] = []
   private _frameBorder: string = '0'
   private _targetOrigin: string | null = null
+  private _defaultTimeout = 30000
 
   /*
    * @hidden
@@ -60,6 +61,10 @@ export class ChattyHostBuilder {
 
   get url () {
     return this._url
+  }
+
+  get defaultTimeout () {
+    return this._defaultTimeout
   }
 
   /**
@@ -96,6 +101,11 @@ export class ChattyHostBuilder {
   on (name: string, fn: Callback) {
     this._handlers[name] = this._handlers[name] || []
     this._handlers[name].push(fn)
+    return this
+  }
+
+  withDefaultTimeout (timeout: number) {
+    this._defaultTimeout = timeout
     return this
   }
 

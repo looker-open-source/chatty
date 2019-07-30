@@ -24,4 +24,5 @@
 
 export class Actions {
   public static readonly SET_STATUS = 'set status'
+  public static readonly GET_TITLE = 'get title'
 }
