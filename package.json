@@ -14,9 +14,11 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf lib",
+    "docs": "typedoc --mode file --out docs",
     "lint": "tslint --project tsconfig.json --format stylish 'src/**/*.ts'",
     "lint-fix": "tslint --fix --project tsconfig.json  --format stylish 'src/**/*.ts'",
     "start": "webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
+    "prepublish": "npm run build",
     "test": "npm run lint && karma start karma.conf.js",
     "test-once": "npm run lint && karma start karma.conf.js --single-run "
   },
@@ -46,6 +48,7 @@
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
     "tsutils": "^3.9.1",
+    "typedoc": "0.15.0",
     "typescript": "^3.0.3",
     "typescript-tslint-plugin": "^0.3.1",
     "webpack": "^4.29.6",

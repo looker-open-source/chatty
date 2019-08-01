@@ -44,8 +44,10 @@ export enum ChattyClientStates {
  * The client connection to the host.
  */
 
-export type ChattyClientConnection = {
+export interface ChattyClientConnection {
   /**
+   * Send a message to the host via a message channel.
+   *
    * @param eventName The name of the event to send to the host
    * @param payload Additional data to send to host. Restricted to transferable objects, ownership of the
    * object will be transferred to the host.
@@ -53,12 +55,23 @@ export type ChattyClientConnection = {
 
   send (eventName: string, ...payload: any[]): void
 
-  sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
+  /**
+   * Send a message to the host via a message channel, and then await a response.
+   *
+   * @param eventName The name of the event to send to the host
+   * @param payload Additional data to send to host. Restricted to transferable objects, ownership of the
+   * object will be transferred to the host.
+   * @returns A Promise that will resolve when the host event handler returns. The promise will reject
+   * if no response is received within [[ChattyClientBuilder.withDefaultTimeout]] milliseconds. The
+   * response will be an array containing all responses from any registered event handlers on the host.
+   */
+
+  sendAndReceive (eventName: string, ...payload: any[]): Promise<any[]>
 }
 
 /**
  * The client object for an iframe. The user should not create this object directly, it
- * is returned by the `ChattyClientBuilder.build()` method.
+ * is returned by the [[ChattyClientBuilder.build]] method.
  */
 
 export class ChattyClient {
@@ -106,7 +119,7 @@ export class ChattyClient {
   /**
    * Connects to the host window.
    * @returns a Promise to an object that resolves when the host has acknowledged the connection. The
-   * object contains a `send(message, data)` method that can be used to talk to the host.
+   * object implements the [[ChattyClientConnection]] interface that can be used to talk to the host.
    */
 
   async connect (): Promise<ChattyClientConnection> {

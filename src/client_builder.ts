@@ -26,7 +26,7 @@ import { Callback, CallbackStore } from './types'
 import { ChattyClient } from './client'
 
 /**
- * Provides methods to defined the properties of a [[ChattyClient]]
+ * Provides methods to define the properties of a [[ChattyClient]]
  */
 
 export class ChattyClientBuilder {
@@ -66,6 +66,8 @@ export class ChattyClientBuilder {
    * @param name Event name to which to listen.
    * @param fn Callback function that is invoked when the event
    * is received, and accepts any parameters that were passed with the event.
+   * If the event received is sent using [[ChattyHostConnection.sendAndReceive]], its return value is
+   * included in the array that will be passed to the resolved promise.
    * @returns the client builder
    */
 
@@ -74,6 +76,14 @@ export class ChattyClientBuilder {
     this._handlers[name].push(fn)
     return this
   }
+
+  /**
+   * Sets the default period of time a [[ChattyClientConnection.sendAndReceive]] message will wait.
+   * The default is 30000ms
+   *
+   * @param timeout in milliseconds
+   * @returns the client builder
+   */
 
   withDefaultTimeout (timeout: number) {
     this._defaultTimeout = timeout

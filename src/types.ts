@@ -29,19 +29,19 @@
 export type Callback = (...args: any[]) => any
 
 /**
- * A container for callback methods indexed by event name.
+ * A container for [[Callback]] methods indexed by event name.
  */
 
-export type CallbackStore = {
+export interface CallbackStore {
   [name: string]: Callback[]
 }
 
 /**
  * A container for generic methods
  *
- * @deprecated Replaced by ChattyHostConnection and ChattyClientConnection
+ * @deprecated Replaced by [[ChattyHostConnection]] and [[ChattyClientConnection]]
  */
 
-export type MethodStore = {
+export interface MethodStore {
   [name: string]: (...args: any[]) => any
 }

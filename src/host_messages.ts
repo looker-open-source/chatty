@@ -23,12 +23,17 @@
  */
 
 /**
- * The recognized set of messages that are sent from the host to the client. Internal use only.
+ * The recognized set of messages that are sent from the host to the client.
+ * @private
  */
 
 export enum ChattyHostMessages {
+  /** Acknowledge client connection */
   SynAck,
+  /** Normal message */
   Message,
+  /** Message that expects a response */
   MessageWithResponse,
+  /** Response  */
   Response
 }

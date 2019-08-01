@@ -23,13 +23,19 @@
  */
 
 /**
- * The recognized set of events that are sent from the client to the host. Internal use only.
+ * The recognized set of events that are sent from the client to the host.
+ * @private
  */
 
 export enum ChattyClientMessages {
+  /** First part of handshake message */
   Syn,
+  /** Final part of handshake message */
   Ack,
+  /** Normal message */
   Message,
+  /** Message that expects a response */
   MessageWithResponse,
+  /** Response */
   Response
 }

@@ -44,8 +44,10 @@ export enum ChattyHostStates {
  * The Host connection to the client.
  */
 
-export type ChattyHostConnection = {
+export interface ChattyHostConnection {
   /**
+   * Send a message to the client via a message channel.
+   *
    * @param eventName The name of the event to send to the client
    * @param payload Additional data to send to the client. Restricted to transferable objects, ownership of the
    * object will be transferred to the client.
@@ -53,12 +55,23 @@ export type ChattyHostConnection = {
 
   send (eventName: string, ...payload: any[]): void
 
+  /**
+   * Send a message to the client via a message channel, and then await a response.
+   *
+   * @param eventName The name of the event to send to the client
+   * @param payload Additional data to send to client. Restricted to transferable objects, ownership of the
+   * object will be transferred to the client.
+   * @returns A Promise that will resolve when the client event handler returns. The promise will reject
+   * if no response is received within [[ChattyClientBuilder.withDefaultTimeout]] milliseconds. The
+   * response will be an array containing all responses from any registered event handlers on the client.
+   */
+
   sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
  * The host object for an iframe. The user should not create this object directly, it
- * is returned by the `ChattyClientBuilder.build()` method.
+ * is returned by the [[ChattyHostBuilder.build]] method.
  */
 
 export class ChattyHost {
@@ -119,7 +132,7 @@ export class ChattyHost {
    * connection using the chatty client.
    *
    * @returns a Promise to an object that resolves when the client has initiated the connection. The
-   * object contains a `send(message, data)` method that can be used to talk to the host.
+   * object implements the [[ChattyHostConnection]] that can be used to talk to the host.
    */
 
   async connect (): Promise<ChattyHostConnection> {
