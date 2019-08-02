@@ -172,12 +172,13 @@ export class ChattyHost {
               break
             case ChattyClientMessages.MessageWithResponse:
               const { eventName, payload, sequence } = evt.data.data
+              let results = []
               if (this._handlers[eventName]) {
-                const results = this._handlers[eventName].map(
+                results = this._handlers[eventName].map(
                   fn => fn.apply(this, payload)
                 )
-                this.sendMsg(ChattyHostMessages.Response, { eventName, payload: results }, sequence)
               }
+              this.sendMsg(ChattyHostMessages.Response, { eventName, payload: results }, sequence)
               break
             case ChattyClientMessages.Response:
               const receiver = this._receivers[evt.data.data.sequence]

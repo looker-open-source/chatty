@@ -5,15 +5,17 @@ host/client channel message manager. It uses
 [MessageChannels](https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel)
 to avoid cross-talk between multiple iframes. It allows configuring the iframe to run in sandboxed mode.
 
+## Basic use
+
 A user first initiates the creation of a client iframe using the `createHost(url)` method, adding event
 handlers using `on(eventName, data)`. They then creates the iframe using `build()`, and opens
 a communication channel using `connect()`. Once the channel opens, the user can send messages to
 the client with `send(eventName, data)`
 
 ```typescript
-import { Chatty } from 'chatty'
+  import { Chatty } from 'chatty'
 
-Chatty.createHost('//example.com/client.html')
+  Chatty.createHost('//example.com/client.html')
     .on(Actions.SET_STATUS, (msg: Msg) => {
       const status: Element = document.querySelector('#host-status')!
       status.innerHTML = `${msg.status} 1`
@@ -49,9 +51,49 @@ client and connects. Once connected, it can send messages to its host.
     .catch(console.error)
 ```
 
+## Sending and receiving
+
+Both the host and the client can send a message and wait for a response. The `sendAndReceive()` method
+returns a promise that is resolved with a values returned by the event listeners on the client or host.
+
+For example, a host can request that the client return its title.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createHost('//example.com/client.html')
+    .build()
+    .connect()
+    .then(client => {
+      document.querySelector('#get-title')!.addEventListener('click', () => {
+        client.sendAndReceive(Actions.GET_TITLE, (payload: any[]) => {
+          const title: Element = document.querySelector('#got-title')!
+          status.innerHTML = payload[0]
+        }
+      })
+    })
+    .catch(console.error)
+```
+
+The client simply returns the text value of its title in the event handler.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createClient()
+    .on(Actions.GET_TITLE, () => {
+      return document.querySelector('title')!.text
+    })
+    .build()
+    .connect()
+    .catch(console.error)
+```
+
+The results provided by the promise are an array because their may be multiple handlers for a given event. If there are no event handlers for a given action the array will be empty.
+
 ## Getting Started
 
-1. Make sure you have node and npm versions installed per package.json's "engines" field.
+1. Make sure you have node and npm versions installed per `package.json`'s "engines" field.
 2. `npm install`
 3. `npm test`
 4. `npm start`

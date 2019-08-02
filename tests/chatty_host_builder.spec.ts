@@ -93,13 +93,19 @@ describe('ChattyHostBuilder', () => {
     expect(host.handlers.party).toEqual([dance, pizza])
   })
 
-  it('should add a sandbox attribute', () => {
+  it('should add a sandbox attribute (deprecated)', () => {
     const host = Chatty.createHost(url)
       .sandbox('allow-scripts')
     expect(host.sandboxAttrs).toContain('allow-scripts')
   })
 
-  it('should set frame border', () => {
+  it('should add a sandbox attribute', () => {
+    const host = Chatty.createHost(url)
+      .withSandboxAttribute('allow-scripts')
+    expect(host.sandboxAttrs).toContain('allow-scripts')
+  })
+
+  it('should set frame border (deprecated)', () => {
     const host = Chatty.createHost(url)
       .frameBorder('1')
     expect(host.getFrameBorder()).toEqual('1')

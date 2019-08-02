@@ -27,7 +27,7 @@ import { Actions } from './constants'
 import { Msg } from './types'
 
 const doGetTitle = (client: ChattyHostConnection, id: number) => {
-  client.sendAndReceive(Actions.GET_TITLE).then((payload: any) => {
+  client.sendAndReceive(Actions.GET_TITLE).then((payload: any[]) => {
     document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
   }).catch(console.error)
 }

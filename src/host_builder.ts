@@ -136,6 +136,7 @@ export class ChattyHostBuilder {
 
   sandbox (attr: string) {
     this.withSandboxAttribute(attr)
+    return this
   }
 
   /**
