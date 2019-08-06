@@ -68,7 +68,7 @@ For example, a host can request that the client return its title.
       document.querySelector('#get-title')!.addEventListener('click', () => {
         client.sendAndReceive(Actions.GET_TITLE, (payload: any[]) => {
           const title: Element = document.querySelector('#got-title')!
-          status.innerHTML = payload[0]
+          title.innerHTML = payload[0]
         }
       })
     })

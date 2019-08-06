@@ -190,8 +190,9 @@ export class ChattyClient {
   }
 
   private sendMsg (action: ChattyClientMessages, data: object = {}, sequence?: number) {
-    ChattyClient._debug('sending', action, data)
     const sequenceData = sequence ? { sequence } : {}
-    this._channel.port1.postMessage({ action, data: { ...data, ...sequenceData } })
+    const dataWithSequence = { ...data, ...sequenceData }
+    ChattyClient._debug('sending', action, dataWithSequence)
+    this._channel.port1.postMessage({ action, data: dataWithSequence })
   }
 }

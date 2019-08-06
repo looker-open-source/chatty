@@ -226,11 +226,10 @@ export class ChattyHost {
   }
 
   private sendMsg (action: ChattyHostMessages, data: object = {}, sequence?: number) {
-    ChattyHost._debug('port sending', action, data)
-
     const sequenceData = sequence ? { sequence } : {}
-
-    this._port!.postMessage({ action, data: { ...data, ...sequenceData } })
+    const dataWithSequence = { ...data, ...sequenceData }
+    ChattyHost._debug('sending', action, dataWithSequence)
+    this._port!.postMessage({ action, data: dataWithSequence })
   }
 
   // TODO: natenate
