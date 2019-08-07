@@ -18,7 +18,7 @@
     "lint": "tslint --project tsconfig.json --format stylish 'src/**/*.ts'",
     "lint-fix": "tslint --fix --project tsconfig.json  --format stylish 'src/**/*.ts'",
     "start": "webpack-dev-server --config webpack-devserver.config.js --hot --inline --open --color --progress",
-    "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "test": "npm run lint && karma start karma.conf.js",
     "test-once": "npm run lint && karma start karma.conf.js --single-run "
   },
@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/looker-open-source/chatty",
   "devDependencies": {
+    "@babel/core": "^7.4.3",
     "@types/debug": "^4.1.2",
     "@types/jasmine": "^2.8.2",
     "babel-loader": "^8.0.5",
@@ -55,7 +56,6 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "@babel/core": "^7.4.3",
     "debug": "^2.2.0",
     "es6-promise": "^4.2.5"
   }
