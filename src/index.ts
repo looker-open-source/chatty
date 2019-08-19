@@ -42,7 +42,7 @@ export class Chatty {
   /**
    * Creates a [[ChattyHostBuilder]] object. The builder presents a set of methods to configure
    * and construct the host object.
-   *   *
+   *
    * It is up to the client's webserver to return the correct headers to allow for parent/iframe
    * communication. See
    * [Window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)

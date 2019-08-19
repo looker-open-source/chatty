@@ -22,12 +22,19 @@
  * THE SOFTWARE.
  */
 
-import { Chatty } from '../src/index'
+import { Chatty, ChattyHostConnection } from '../src/index'
 import { Actions } from './constants'
 import { Msg } from './types'
 
+const doGetTitle = (client: ChattyHostConnection, id: number) => {
+  client.sendAndReceive(Actions.GET_TITLE).then((payload: any[]) => {
+    document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
+  }).catch(console.error)
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   Chatty.createHost('//localhost:8080/client.html')
+    .appendTo(document.querySelector('#div-1') as HTMLElement)
     .on(Actions.SET_STATUS, (msg: Msg) => {
       const status: Element = document.querySelector('#host-status')!
       status.innerHTML = `${msg.status} 1`
@@ -40,9 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#change-status')!.addEventListener('click', () => {
         client.send(Actions.SET_STATUS, { status: 'Message to client 1' })
       })
+      document.querySelector('#get-title-1')!.addEventListener('click', () => doGetTitle(client, 1))
     })
     .catch(console.error)
   Chatty.createHost('//localhost:8080/client.html')
+    .appendTo(document.querySelector('#div-2') as HTMLElement)
     .on(Actions.SET_STATUS, (msg: Msg) => {
       const status = document.querySelector('#host-status')!
       status.innerHTML = `${msg.status} 2`
@@ -55,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#change-status')!.addEventListener('click', () => {
         client.send(Actions.SET_STATUS, { status: 'Message to client 2' })
       })
+      document.querySelector('#get-title-2')!.addEventListener('click', () => doGetTitle(client, 2))
     })
     .catch(console.error)
 })

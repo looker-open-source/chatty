@@ -10,6 +10,7 @@
     "no-reference": true,
     "promise-function-async": true,
     "await-promise": true,
+    "interface-over-type-literal": true,
     "no-inferred-empty-object-type": true,
     "no-unnecessary-type-assertion": false,
     "strict-type-predicates": true,

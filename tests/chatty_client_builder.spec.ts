@@ -73,6 +73,29 @@ describe('ChattyClientBuilder', () => {
     expect(client.handlers.party).toEqual([dance, pizza])
   })
 
+  it('should not remove an on<action> handler with off if the name does not match', () => {
+    const dance = jasmine.createSpy('dance')
+    const pizza = jasmine.createSpy('pizza')
+    const client = Chatty.createClient()
+
+    client.on('party', dance)
+    client.on('party', pizza)
+    client.off('off', dance)
+    expect(client.handlers.party).toEqual([dance, pizza])
+  })
+
+  describe('defaultTimeout', () => {
+    it('should default to 30 seconds', () => {
+      const client = Chatty.createClient()
+      expect(client.defaultTimeout).toEqual(30000)
+    })
+
+    it('should allow setting', () => {
+      const client = Chatty.createClient().withDefaultTimeout(100)
+      expect(client.defaultTimeout).toEqual(100)
+    })
+  })
+
   describe('targetOrigin', () => {
     it('should default to wildcard', () => {
       const client = Chatty.createClient()

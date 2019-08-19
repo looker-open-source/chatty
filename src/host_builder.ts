@@ -35,11 +35,9 @@ export class ChattyHostBuilder {
   private _sandboxAttrs: string[] = []
   private _frameBorder: string = '0'
   private _targetOrigin: string | null = null
+  private _defaultTimeout = 30000
 
-  /*
-   * @hidden
-   */
-
+  /** @hidden */
   constructor (private _url: string) {}
 
   get el () {
@@ -62,9 +60,14 @@ export class ChattyHostBuilder {
     return this._url
   }
 
+  get defaultTimeout () {
+    return this._defaultTimeout
+  }
+
   /**
    * @param el the HTML element that the iframe will live inside. The iframe will be created as
    * a direct child of the element.
+   * @returns the host builder
    */
 
   appendTo (el: HTMLElement) {
@@ -77,6 +80,7 @@ export class ChattyHostBuilder {
    *
    * @param name Event name
    * @param fn Callback function to remove.
+   * @returns the host builder
    */
 
   off (name: string, fn: Callback) {
@@ -90,7 +94,10 @@ export class ChattyHostBuilder {
    *
    * @param name Event name to which to listen.
    * @param fn Callback function that is invoked when the event
-   * is received, and accepts any parameters that were passed with the event.
+   * is received, and accepts any parameters that were passed with the event. If the event
+   * received is sent using [[ChattyClientConnection.sendAndReceive]], its return value is included
+   * in the array that will be passed to the resolved promise.
+   * @returns the host builder
    */
 
   on (name: string, fn: Callback) {
@@ -99,19 +106,57 @@ export class ChattyHostBuilder {
     return this
   }
 
+  /**
+   * Sets the default period of time a [[ChattyHostConnection.sendAndReceive]] message will wait
+   * for a response. The default is 30000ms
+   *
+   * @param timeout in milliseconds
+   * @returns the host builder
+   */
+
+  withDefaultTimeout (timeout: number) {
+    this._defaultTimeout = timeout
+    return this
+  }
+
+  /** @deprecated The frame-board attribute is deprecated, use CSS instead */
+
   getFrameBorder () {
     return this._frameBorder
   }
+
+  /** @deprecated The frame-board attribute is deprecated, use CSS instead */
 
   frameBorder (attr: string) {
     this._frameBorder = attr
     return this
   }
 
+  /** @deprecated Replaced by [[withSandboxAttribute]] */
+
   sandbox (attr: string) {
+    this.withSandboxAttribute(attr)
+    return this
+  }
+
+  /**
+   * Create the iframe with the give sandbox attribute
+   *
+   * @param attr The sandbox attribute
+   */
+
+  withSandboxAttribute (attr: string) {
     this._sandboxAttrs.push(attr)
     return this
   }
+
+  /**
+   * Use `targetOrigin` as the value for postMessage(). See
+   * [Window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
+   * for details.
+   *
+   * @param targetOrigin
+   */
 
   withTargetOrigin (targetOrigin: string) {
     this._targetOrigin = targetOrigin
