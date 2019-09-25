@@ -59,7 +59,7 @@ describe('ChattyHostBuilder', () => {
 
   it('should add an HTMLElement to appendTo using source', () => {
     const element = document.body
-    const host = Chatty.createHost(undefined, source)
+    const host = Chatty.createHostFromSource(source)
       .appendTo(element)
     expect(host.el).toEqual(element)
   })

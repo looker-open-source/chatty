@@ -91,7 +91,7 @@ export class ChattyHost {
   private _state = ChattyHostStates.Connecting
   private _defaultTimeout: number
   private _sequence = 0
-  private _receivers: { [key: number]: (value?: any) => void } = {}
+  private _receivers: {[key: number]: (value?: any) => void} = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
@@ -105,9 +105,6 @@ export class ChattyHost {
     this.iframe.frameBorder = builder.getFrameBorder()
     if (builder.url) {
       this.iframe.src = builder.url
-      if (builder.source) {
-        console.warn('source is ignored when Chatty host is initialized with url')
-      }
     } else if (builder.source) {
       this.iframe.srcdoc = builder.source
     } else {

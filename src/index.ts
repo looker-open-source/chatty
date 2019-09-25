@@ -49,13 +49,22 @@ export class Chatty {
    * for details.
    *
    * @param url The URL of the client iframe to create. The hosted iframe should create a chatty
-   * client to communicate with the host. Optional, if not provided, source will be used,
+   * client to communicate with the host.
+   */
+  static createHost (url: string) {
+    return new ChattyHostBuilder(url)
+  }
+
+  /**
+   * Creates a [[ChattyHostBuilder]] object. The builder presents a set of methods to configure
+   * and construct the host object.
+   *
    * @param source The source of the client iframe to create. The hosted iframe should create a chatty
-   * client to communicate with the host. Otional, if not provided, url will be used.
+   * client to communicate with the host.
    */
 
-  static createHost (url?: string, source?: string) {
-    return new ChattyHostBuilder(url, source)
+  static createHostFromSource (source?: string) {
+    return new ChattyHostBuilder(undefined, source)
   }
 
   /**
