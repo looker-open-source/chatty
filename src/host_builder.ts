@@ -38,7 +38,7 @@ export class ChattyHostBuilder {
   private _defaultTimeout = 30000
 
   /** @hidden */
-  constructor (private _url: string) {}
+  constructor (private _url?: string, private _source?: string) {}
 
   get el () {
     return this._appendTo || document.body
@@ -58,6 +58,10 @@ export class ChattyHostBuilder {
 
   get url () {
     return this._url
+  }
+
+  get source () {
+    return this._source
   }
 
   get defaultTimeout () {

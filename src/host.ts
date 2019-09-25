@@ -103,7 +103,13 @@ export class ChattyHost {
     builder.sandboxAttrs.forEach(attr => this.iframe.sandbox.add(attr))
     // tslint:disable-next-line:deprecation
     this.iframe.frameBorder = builder.getFrameBorder()
-    this.iframe.src = builder.url
+    if (builder.url) {
+      this.iframe.src = builder.url
+    } else if (builder.source) {
+      this.iframe.srcdoc = builder.source
+    } else {
+      console.warn('url or source required to initialize Chatty host correctly')
+    }
     this._appendTo = builder.el
     this._handlers = builder.handlers
     this._port = null

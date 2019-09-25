@@ -25,6 +25,21 @@
 import { Chatty } from '../src/index'
 import { ChattyHost } from '../src/host'
 const url = '/base/tests/test.html'
+const source = `
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chatty Demo</title>
+</head>
+<body>
+  <h1>Chatty Demo Page</h1>
+  <div id="host-target"></div>
+</body>
+</html>
+`
 
 describe('ChattyHostBuilder', () => {
   const dance = jasmine.createSpy('dance')
@@ -35,9 +50,16 @@ describe('ChattyHostBuilder', () => {
     expect(host).toEqual(jasmine.any(ChattyHost))
   })
 
-  it('should add an HTMLElement to appendTo', () => {
+  it('should add an HTMLElement to appendTo using url', () => {
     const element = document.body
     const host = Chatty.createHost(url)
+      .appendTo(element)
+    expect(host.el).toEqual(element)
+  })
+
+  it('should add an HTMLElement to appendTo using source', () => {
+    const element = document.body
+    const host = Chatty.createHostFromSource(source)
       .appendTo(element)
     expect(host.el).toEqual(element)
   })
