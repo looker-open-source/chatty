@@ -1,6 +1,6 @@
 {
   "name": "@looker/chatty",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A simple postMessage host / client channel manager.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -49,7 +49,7 @@
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
     "tsutils": "^3.9.1",
-    "typedoc": "0.15.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.0.3",
     "typescript-tslint-plugin": "^0.3.1",
     "webpack": "^4.29.6",
