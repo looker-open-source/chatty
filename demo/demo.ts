@@ -33,13 +33,13 @@ const doGetTitle = (client: ChattyHostConnection, id: number) => {
 }
 
 const doGetTitleAsync = (client: ChattyHostConnection, id: string) => {
-  client.sendAndReceiveAsync(Actions.GET_TITLE_ASYNC).then((payload: any[]) => {
+  client.sendAndReceive(Actions.GET_TITLE_ASYNC).then((payload: any[]) => {
     document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
   }).catch(console.error)
 }
 
 const doGetErrorAsync = (client: ChattyHostConnection, id: string) => {
-  client.sendAndReceiveAsync(Actions.GET_ERROR_ASYNC).then((payload: any[]) => {
+  client.sendAndReceive(Actions.GET_ERROR_ASYNC).then((payload: any[]) => {
     document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
   }).catch(error => {
     document.querySelector(`#got-error-${id}`)!.innerHTML = 'error occured - see console'

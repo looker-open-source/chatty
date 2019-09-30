@@ -174,41 +174,6 @@ describe('ChattyClient', function () {
           }).catch(console.error)
         })
 
-        it('sendAndReceiveAsync function sends a message and returns a promise that resolves on response', function (done) {
-          connecting.then((connection) => {
-            connection.sendAndReceiveAsync(eventName, payload)
-              .then((data) => {
-                expect(data[0]).toEqual({ message: 'Hello' })
-                done()
-              })
-              .catch(console.error)
-            expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.MessageWithResponseAsync)
-            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
-            expect(client.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
-            const sequence = client.sendMsg.calls.argsFor(1)[2]
-            client._channel.port2.postMessage({
-              action: ChattyHostMessages.Response,
-              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
-            })
-          }).catch(console.error)
-        })
-
-        it('sendAndReceiveAsync ignores invalid sequence values', function (done) {
-          connecting.then((connection) => {
-            connection.sendAndReceiveAsync(eventName, payload)
-              .then(() => void 0)
-              .catch(done)
-            expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.MessageWithResponseAsync)
-            expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
-            expect(client.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
-            const sequence = client.sendMsg.calls.argsFor(1)[2] + 100
-            client._channel.port2.postMessage({
-              action: ChattyHostMessages.Response,
-              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
-            })
-          }).catch(console.error)
-        })
-
         it('should initiate handshake', function (done) {
           connecting.then(() => {
             expect(client.initiateHandshake).toHaveBeenCalled()
@@ -336,7 +301,7 @@ describe('ChattyClient', function () {
         })
       })
 
-      describe('client receives MessageWithResponseAsync', function () {
+      describe('client receives MessageWithResponse promise', function () {
         beforeEach(() => {
           const p = new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -360,7 +325,7 @@ describe('ChattyClient', function () {
         it('should apply the correct event handler', function (done) {
           connecting.then(() => {
             client._channel.port2.postMessage({
-              action: ChattyHostMessages.MessageWithResponseAsync,
+              action: ChattyHostMessages.MessageWithResponse,
               data: {
                 eventName: 'party',
                 payload: {
@@ -384,7 +349,7 @@ describe('ChattyClient', function () {
         it('should ignore unknown events', function (done) {
           connecting.then(() => {
             client._channel.port2.postMessage({
-              action: ChattyHostMessages.MessageWithResponseAsync,
+              action: ChattyHostMessages.MessageWithResponse,
               data: {
                 eventName: 'school'
               }

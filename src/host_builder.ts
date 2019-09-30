@@ -111,9 +111,8 @@ export class ChattyHostBuilder {
   }
 
   /**
-   * Sets the default period of time a [[ChattyHostConnection.sendAndReceive]] or
-   * [[ChattyHostConnection.sendAndReceiveAsync]]message will wait. Use a negative
-   * number to wait indefinitely.
+   * Sets the default period of time a [[ChattyHostConnection.sendAndReceive]] message will wait.
+   * Use a negative number to wait indefinitely.
    *
    * @param timeout in milliseconds
    * @returns the host builder

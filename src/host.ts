@@ -56,8 +56,9 @@ export interface ChattyHostConnection {
   send (eventName: string, ...payload: any[]): void
 
   /**
-   * Send a message to the client via a message channel, and then await a response. The event listener in
-   * the client returns data immediately.
+   * Send a message to the client via a message channel and then await a response.
+   * The event listener in the client returns a value or a promise that is resolved
+   * at some later point.
    *
    * @param eventName The name of the event to send to the client
    * @param payload Additional data to send to client. Restricted to transferable objects, ownership of the
@@ -68,21 +69,6 @@ export interface ChattyHostConnection {
    */
 
   sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
-
-  /**
-   * Send a message to the client via a message channel, and then await a response that is returned
-   * asynchronously. The event listener in the client returns a promise that is resolved at some later
-   * point.
-   *
-   * @param eventName The name of the event to send to the client
-   * @param payload Additional data to send to client. Restricted to transferable objects, ownership of the
-   * object will be transferred to the client.
-   * @returns A Promise that will resolve when the client event handler returns. The promise will reject
-   * if no response is received within [[ChattyClientBuilder.withDefaultTimeout]] milliseconds. The
-   * response will be an array containing all responses from any registered event handlers on the client.
-   */
-
-  sendAndReceiveAsync (eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
@@ -176,14 +162,18 @@ export class ChattyHost {
                 sendAndReceive: async (eventName: string, ...payload: any[]) => {
                   const sequence = ++this._sequence
                   this.sendMsg(ChattyHostMessages.MessageWithResponse, { eventName, payload }, sequence)
-                  return this.handleSendReceive(sequence)
-                },
-
-                sendAndReceiveAsync: async (eventName: string, ...payload: any[]) => {
-                  const sequence = ++this._sequence
-                  this.sendMsg(ChattyHostMessages.MessageWithResponseAsync, { eventName, payload }, sequence)
-                  return this.handleSendReceive(sequence)
+                  return new Promise<any>((resolve, reject) => {
+                    let timeoutId
+                    if (this._defaultTimeout > -1) {
+                      timeoutId = setTimeout(() => {
+                        delete this._receivers[sequence]
+                        reject(new Error('Timeout'))
+                      }, this._defaultTimeout)
+                    }
+                    this._receivers[sequence] = { resolve, reject, timeoutId }
+                  })
                 }
+
               })
               break
             case ChattyClientMessages.Message:
@@ -192,21 +182,6 @@ export class ChattyHost {
               }
               break
             case ChattyClientMessages.MessageWithResponse:
-              const { eventName, payload, sequence } = evt.data.data
-              let results = []
-              if (this._handlers[eventName]) {
-                try {
-                  results = this._handlers[eventName].map(
-                    fn => fn.apply(this, payload)
-                  )
-                } catch (error) {
-                  this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: error }, sequence)
-                  break
-                }
-              }
-              this.sendMsg(ChattyHostMessages.Response, { eventName, payload: results }, sequence)
-              break
-            case ChattyClientMessages.MessageWithResponseAsync:
               {
                 const { eventName, payload, sequence } = evt.data.data
                 let results: any = []
@@ -308,16 +283,4 @@ export class ChattyHost {
     return true
   }
 
-  private async handleSendReceive (sequence: number) {
-    return new Promise<any>((resolve, reject) => {
-      let timeoutId
-      if (this._defaultTimeout > -1) {
-        timeoutId = setTimeout(() => {
-          delete this._receivers[sequence]
-          reject(new Error('Timeout'))
-        }, this._defaultTimeout)
-      }
-      this._receivers[sequence] = { resolve, reject, timeoutId }
-    })
-  }
 }

@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         host.send(Actions.SET_STATUS, { status: 'click from client' })
       })
       document.querySelector('#bump-host-counter')!.addEventListener('click', () => {
-        host.sendAndReceiveAsync(Actions.BUMP_AND_GET_COUNTER_ASYNC).then((payload: any[]) => {
+        host.sendAndReceive(Actions.BUMP_AND_GET_COUNTER_ASYNC).then((payload: any[]) => {
           document.querySelector('#host-counter')!.innerHTML = payload[0]
         }).catch((error: any) => {
           document.querySelector('#host-counter')!.innerHTML = error

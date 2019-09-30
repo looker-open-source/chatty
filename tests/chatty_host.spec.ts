@@ -309,40 +309,6 @@ describe('ChattyHost', () => {
           }).catch(console.error)
         })
 
-        it('sendAndReceiveAync function sends a message and returns a promise that resolves on response', function (done) {
-          connecting.then((connection) => {
-            connection.sendAndReceiveAsync(eventName, payload)
-              .then((data) => {
-                expect(data).toEqual([{ message: 'Hello' }])
-                done()
-              })
-              .catch(console.error)
-            expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyHostMessages.MessageWithResponseAsync)
-            expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
-            expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
-            const sequence = host.sendMsg.calls.argsFor(1)[2]
-            channel.port1.postMessage({
-              action: ChattyClientMessages.Response,
-              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
-            })
-          }).catch(console.error)
-        })
-
-        it('sendAndReceiveAsync ignores invalid sequence numbers', function (done) {
-          connecting.then((connection) => {
-            connection.sendAndReceiveAsync(eventName, payload)
-              .then(() => void 0)
-              .catch(done)
-            expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyHostMessages.MessageWithResponseAsync)
-            expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
-            expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
-            const sequence = host.sendMsg.calls.argsFor(1)[2] + 100
-            channel.port1.postMessage({
-              action: ChattyClientMessages.Response,
-              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
-            })
-          }).catch(console.error)
-        })
       })
 
       describe('host receives Message', () => {
@@ -459,7 +425,7 @@ describe('ChattyHost', () => {
         })
       })
 
-      describe('host receives MessageWithResponseAsync', () => {
+      describe('host receives MessageWithResponse promise', () => {
         beforeEach(() => {
           const p = new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -482,7 +448,7 @@ describe('ChattyHost', () => {
 
           connecting.then(() => {
             channel.port1.postMessage({
-              action: ChattyClientMessages.MessageWithResponseAsync,
+              action: ChattyClientMessages.MessageWithResponse,
               data: {
                 eventName: 'party',
                 payload: payload,
@@ -506,7 +472,7 @@ describe('ChattyHost', () => {
 
           connecting.then(() => {
             channel.port1.postMessage({
-              action: ChattyClientMessages.MessageWithResponseAsync,
+              action: ChattyClientMessages.MessageWithResponse,
               data: {
                 eventName: 'study'
               }

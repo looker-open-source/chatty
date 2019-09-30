@@ -89,9 +89,7 @@ For example, a host can request that the client return its title.
     .catch(console.error)
 ```
 
-The client simply returns the text value of its title in the event handler. Note that this form of
-`sendAndReceive` expects the responding function to be synchronous. Should the responding function
-need to be asynchronous see the section **Sending and receiving asynchronous responses**.
+The client simply returns the text value of its title in the event handler.
 
 ```typescript
   import { Chatty } from 'chatty'
@@ -109,10 +107,10 @@ The results provided by the promise are an array because their may be multiple h
 
 ## Sending and receiving asynchronous responses
 
-If a response messages has data that needs to be retrieved asynchronously use the `sendAndReceiveAsync` method.
+The `sendAndReceive` method can also be used for data that needs to be retrieved asynchronously. In this scenario
+the target function must return a Promise.
 
-For example, a host can request that the client return some data that can only be retrieved asynchronously. The
-code is virtually identical to the synchronous send and receive with the exception of the method call
+In the following example, the host requests that the client return some data that is to be retrieved asynchronously.
 
 ```typescript
   import { Chatty } from 'chatty'
@@ -122,7 +120,7 @@ code is virtually identical to the synchronous send and receive with the excepti
     .connect()
     .then(client => {
       document.querySelector('#get-title')!.addEventListener('click', () => {
-        client.sendAndReceiveAsync(Actions.GET_TITLE, (payload: any[]) => {
+        client.sendAndReceive(Actions.GET_TITLE, (payload: any[]) => {
           const title: Element = document.querySelector('#got-title')!
           title.innerHTML = payload[0]
         }
@@ -131,7 +129,7 @@ code is virtually identical to the synchronous send and receive with the excepti
     .catch(console.error)
 ```
 
-The difference is the client message handler which MUST return a `Promise`.
+The client message handler returns a `Promise`.
 
 ```typescript
   import { Chatty } from 'chatty'
