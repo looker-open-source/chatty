@@ -25,4 +25,7 @@
 export class Actions {
   public static readonly SET_STATUS = 'set status'
   public static readonly GET_TITLE = 'get title'
+  public static readonly GET_TITLE_ASYNC = 'get title async '
+  public static readonly GET_ERROR_ASYNC = 'get error async '
+  public static readonly BUMP_AND_GET_COUNTER_ASYNC = 'bump and get counter async '
 }

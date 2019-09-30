@@ -111,8 +111,9 @@ export class ChattyHostBuilder {
   }
 
   /**
-   * Sets the default period of time a [[ChattyHostConnection.sendAndReceive]] message will wait
-   * for a response. The default is 30000ms
+   * Sets the default period of time a [[ChattyHostConnection.sendAndReceive]] or
+   * [[ChattyHostConnection.sendAndReceiveAsync]]message will wait. Use a negative
+   * number to wait indefinitely.
    *
    * @param timeout in milliseconds
    * @returns the host builder

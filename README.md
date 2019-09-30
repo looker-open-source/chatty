@@ -30,6 +30,20 @@ the client with `send(eventName, data)`
     .catch(console.error)
 ```
 
+The client iframe can also be created using source from the `createHostFromSource(source)` method.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createHostFromSource(`
+      <html>
+        <body>
+          <script src='//example.com/client.js' type="application/javascript" />
+        </body>
+      </html>
+  `)
+```
+
 The client `iframe` creates its client using `createClient()`. It also adds event listeners, builds the
 client and connects. Once connected, it can send messages to its host.
 
@@ -75,7 +89,9 @@ For example, a host can request that the client return its title.
     .catch(console.error)
 ```
 
-The client simply returns the text value of its title in the event handler.
+The client simply returns the text value of its title in the event handler. Note that this form of
+`sendAndReceive` expects the responding function to be synchronous. Should the responding function
+need to be asynchronous see the section **Sending and receiving asynchronous responses**.
 
 ```typescript
   import { Chatty } from 'chatty'
@@ -90,6 +106,48 @@ The client simply returns the text value of its title in the event handler.
 ```
 
 The results provided by the promise are an array because their may be multiple handlers for a given event. If there are no event handlers for a given action the array will be empty.
+
+## Sending and receiving asynchronous responses
+
+If a response messages has data that needs to be retrieved asynchronously use the `sendAndReceiveAsync` method.
+
+For example, a host can request that the client return some data that can only be retrieved asynchronously. The
+code is virtually identical to the synchronous send and receive with the exception of the method call
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createHost('//example.com/client.html')
+    .build()
+    .connect()
+    .then(client => {
+      document.querySelector('#get-title')!.addEventListener('click', () => {
+        client.sendAndReceiveAsync(Actions.GET_TITLE, (payload: any[]) => {
+          const title: Element = document.querySelector('#got-title')!
+          title.innerHTML = payload[0]
+        }
+      })
+    })
+    .catch(console.error)
+```
+
+The difference is the client message handler which MUST return a `Promise`.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createClient()
+    .on(Actions.GET_TITLE, () => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(document.querySelector('title')!.text)
+        }, 200)
+      })
+    })
+    .build()
+    .connect()
+    .catch(console.error)
+```
 
 ## Getting Started
 

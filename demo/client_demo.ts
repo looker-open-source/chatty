@@ -35,12 +35,33 @@ document.addEventListener('DOMContentLoaded', () => {
     .on(Actions.GET_TITLE, (msg: Msg) => {
       return document.querySelector('title')!.innerText
     })
+    .on(Actions.GET_TITLE_ASYNC, (msg: Msg) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(document.querySelector('title')!.innerText)
+        }, 200)
+      })
+    })
+    .on(Actions.GET_ERROR_ASYNC, (msg: Msg) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error("I've fallen and I can't get up!"))
+        }, 200)
+      })
+    })
     .withTargetOrigin(window.location.origin)
     .build()
     .connect()
     .then(host => {
       document.querySelector('#change-status')!.addEventListener('click', () => {
         host.send(Actions.SET_STATUS, { status: 'click from client' })
+      })
+      document.querySelector('#bump-host-counter')!.addEventListener('click', () => {
+        host.sendAndReceiveAsync(Actions.BUMP_AND_GET_COUNTER_ASYNC).then((payload: any[]) => {
+          document.querySelector('#host-counter')!.innerHTML = payload[0]
+        }).catch((error: any) => {
+          document.querySelector('#host-counter')!.innerHTML = error
+        })
       })
     })
     .catch(console.error)

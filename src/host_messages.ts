@@ -34,6 +34,10 @@ export enum ChattyHostMessages {
   Message,
   /** Message that expects a response */
   MessageWithResponse,
+  /** Message that expects an asynchronous response */
+  MessageWithResponseAsync,
   /** Response  */
-  Response
+  Response,
+  /** Asynchronous error response */
+  ResponseError
 }

@@ -78,7 +78,9 @@ export class ChattyClientBuilder {
   }
 
   /**
-   * Sets the default period of time a [[ChattyClientConnection.sendAndReceive]] message will wait.
+   * Sets the default period of time a [[ChattyClientConnection.sendAndReceive]] or
+   * [[ChattyClientConnection.sendAndReceiveAsync]]message will wait. Use a negative
+   * number to wait indefinitely.
    * The default is 30000ms
    *
    * @param timeout in milliseconds

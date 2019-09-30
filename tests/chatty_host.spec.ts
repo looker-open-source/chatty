@@ -34,6 +34,7 @@ let connecting: Promise<ChattyHostConnection>
 let action: ChattyHostMessages
 let data: any
 let dance: any
+let danceAsync: any
 
 const url = '/base/tests/test.html'
 
@@ -307,6 +308,41 @@ describe('ChattyHost', () => {
             })
           }).catch(console.error)
         })
+
+        it('sendAndReceiveAync function sends a message and returns a promise that resolves on response', function (done) {
+          connecting.then((connection) => {
+            connection.sendAndReceiveAsync(eventName, payload)
+              .then((data) => {
+                expect(data).toEqual([{ message: 'Hello' }])
+                done()
+              })
+              .catch(console.error)
+            expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyHostMessages.MessageWithResponseAsync)
+            expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
+            expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
+            const sequence = host.sendMsg.calls.argsFor(1)[2]
+            channel.port1.postMessage({
+              action: ChattyClientMessages.Response,
+              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
+            })
+          }).catch(console.error)
+        })
+
+        it('sendAndReceiveAsync ignores invalid sequence numbers', function (done) {
+          connecting.then((connection) => {
+            connection.sendAndReceiveAsync(eventName, payload)
+              .then(() => void 0)
+              .catch(done)
+            expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyHostMessages.MessageWithResponseAsync)
+            expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
+            expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
+            const sequence = host.sendMsg.calls.argsFor(1)[2] + 100
+            channel.port1.postMessage({
+              action: ChattyClientMessages.Response,
+              data: { sequence, eventName, payload: [{ message: 'Hello' }] }
+            })
+          }).catch(console.error)
+        })
       })
 
       describe('host receives Message', () => {
@@ -415,6 +451,71 @@ describe('ChattyHost', () => {
               expect(host.sendMsg).not.toHaveBeenCalledWith(
                 ChattyHostMessages.Response,
                 { eventName: 'party', payload: [ { lit: true } ] },
+                1
+              )
+              done()
+            })
+          }).catch(console.error)
+        })
+      })
+
+      describe('host receives MessageWithResponseAsync', () => {
+        beforeEach(() => {
+          const p = new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve({ lit: 'done' })
+            })
+          })
+          danceAsync = jasmine.createSpy('dance').and.returnValue(p)
+          host = Chatty.createHost(url)
+            .on('party', danceAsync)
+            .build()
+
+          spyOn(host, 'isValidMsg').and.returnValue(true)
+          spyOn(host, 'sendMsg')
+
+          connecting = host.connect()
+        })
+
+        it('should apply the correct event handler', (done) => {
+          doHandshake()
+
+          connecting.then(() => {
+            channel.port1.postMessage({
+              action: ChattyClientMessages.MessageWithResponseAsync,
+              data: {
+                eventName: 'party',
+                payload: payload,
+                sequence: 1
+              }
+            })
+            setTimeout(() => {
+              expect(danceAsync).toHaveBeenCalled()
+              expect(host.sendMsg).toHaveBeenCalledWith(
+                ChattyHostMessages.Response,
+                { eventName: 'party', payload: [ { lit: 'done' } ] },
+                1
+              )
+              done()
+            })
+          }).catch(console.error)
+        })
+
+        it('should ignore unknown events', (done) => {
+          doHandshake()
+
+          connecting.then(() => {
+            channel.port1.postMessage({
+              action: ChattyClientMessages.MessageWithResponseAsync,
+              data: {
+                eventName: 'study'
+              }
+            })
+            setTimeout(() => {
+              expect(danceAsync).not.toHaveBeenCalled()
+              expect(host.sendMsg).not.toHaveBeenCalledWith(
+                ChattyHostMessages.Response,
+                { eventName: 'party', payload: [ { lit: 'done' } ] },
                 1
               )
               done()

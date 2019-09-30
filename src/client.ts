@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { CallbackStore } from './types'
+import { CallbackStore, Receiver } from './types'
 import { ChattyClientBuilder } from './client_builder'
 import { ChattyClientMessages } from './client_messages'
 import { ChattyHostMessages } from './host_messages'
@@ -56,7 +56,8 @@ export interface ChattyClientConnection {
   send (eventName: string, ...payload: any[]): void
 
   /**
-   * Send a message to the host via a message channel, and then await a response.
+   * Send a message to the host via a message channel, and then await a response. The event listener in
+   * the client returns data immediately.
    *
    * @param eventName The name of the event to send to the host
    * @param payload Additional data to send to host. Restricted to transferable objects, ownership of the
@@ -67,6 +68,21 @@ export interface ChattyClientConnection {
    */
 
   sendAndReceive (eventName: string, ...payload: any[]): Promise<any[]>
+
+  /**
+   * Send a message to the host via a message channel, and then await a response that is returned
+   * asynchronously. The event listener in the host returns a promise that is resolved at some later
+   * point.
+   *
+   * @param eventName The name of the event to send to the client
+   * @param payload Additional data to send to client. Restricted to transferable objects, ownership of the
+   * object will be transferred to the client.
+   * @returns A Promise that will resolve when the client event handler returns. The promise will reject
+   * if no response is received within [[ChattyClientBuilder.withDefaultTimeout]] milliseconds. The
+   * response will be an array containing all responses from any registered event handlers on the client.
+   */
+
+  sendAndReceiveAsync (eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
@@ -86,7 +102,7 @@ export class ChattyClient {
   private _state = ChattyClientStates.Connecting
   private _defaultTimeout: number
   private _sequence = 0
-  private _receivers: {[key: number]: (value?: any) => void } = {}
+  private _receivers: {[key: number]: Receiver} = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
@@ -139,15 +155,15 @@ export class ChattyClient {
               sendAndReceive: async (eventName: string, ...payload: any[]) => {
                 const sequence = ++this._sequence
                 this.sendMsg(ChattyClientMessages.MessageWithResponse, { eventName, payload }, sequence)
-                return new Promise<any>((resolve, reject) => {
-                  this._receivers[sequence] = resolve
+                return this.handleSendReceive(sequence)
+              },
 
-                  setTimeout(() => {
-                    delete this._receivers[sequence]
-                    reject(new Error('Timeout'))
-                  }, this._defaultTimeout)
-                })
+              sendAndReceiveAsync: async (eventName: string, ...payload: any[]) => {
+                const sequence = ++this._sequence
+                this.sendMsg(ChattyClientMessages.MessageWithResponseAsync, { eventName, payload }, sequence)
+                return this.handleSendReceive(sequence)
               }
+
             })
             break
           case ChattyHostMessages.Message:
@@ -156,21 +172,62 @@ export class ChattyClient {
             }
             break
           case ChattyHostMessages.MessageWithResponse:
-            const { eventName, payload, sequence } = evt.data.data
-            let results = []
-            if (this._handlers[eventName]) {
-              results = this._handlers[eventName].map(
-                fn => fn.apply(this, payload)
-              )
+            {
+              const { eventName, payload, sequence } = evt.data.data
+              let results = []
+              if (this._handlers[eventName]) {
+                try {
+                  results = this._handlers[eventName].map(
+                    fn => fn.apply(this, payload)
+                  )
+                } catch (error) {
+                  this.sendMsg(ChattyClientMessages.ResponseError, { eventName, payload: error }, sequence)
+                  break
+                }
+              }
+              this.sendMsg(ChattyClientMessages.Response, { eventName, payload: results }, sequence)
             }
-            this.sendMsg(ChattyClientMessages.Response, { eventName, payload: results }, sequence)
+            break
+          case ChattyHostMessages.MessageWithResponseAsync:
+            {
+              const { eventName, payload, sequence } = evt.data.data
+              let results = []
+              if (this._handlers[eventName]) {
+                results = this._handlers[eventName].map(
+                  fn => fn.apply(this, payload)
+                )
+              }
+              Promise.all(results)
+                .then(resolvedResults => {
+                  this.sendMsg(ChattyClientMessages.Response, { eventName, payload: resolvedResults }, sequence)
+                })
+                .catch(error => {
+                  this.sendMsg(ChattyClientMessages.ResponseError, { eventName, payload: error }, sequence)
+                })
+            }
             break
           case ChattyHostMessages.Response:
             const receiver = this._receivers[evt.data.data.sequence]
             if (receiver) {
               delete this._receivers[evt.data.data.sequence]
-              receiver(evt.data.data.payload)
+              if (receiver.timeoutId) {
+                clearTimeout(receiver.timeoutId)
+              }
+              receiver.resolve(evt.data.data.payload)
             }
+            break
+          case ChattyHostMessages.ResponseError:
+            {
+              const receiver = this._receivers[evt.data.data.sequence]
+              if (receiver) {
+                delete this._receivers[evt.data.data.sequence]
+                if (receiver.timeoutId) {
+                  clearTimeout(receiver.timeoutId)
+                }
+                receiver.reject(evt.data.data.payload)
+              }
+            }
+            break
         }
       }
 
@@ -189,10 +246,23 @@ export class ChattyClient {
     this._state = ChattyClientStates.Syn
   }
 
-  private sendMsg (action: ChattyClientMessages, data: object = {}, sequence?: number) {
+  private sendMsg (action: ChattyClientMessages, data: any = {}, sequence?: number) {
     const sequenceData = sequence ? { sequence } : {}
     const dataWithSequence = { ...data, ...sequenceData }
     ChattyClient._debug('sending', action, dataWithSequence)
     this._channel.port1.postMessage({ action, data: dataWithSequence })
+  }
+
+  private async handleSendReceive (sequence: number) {
+    return new Promise<any>((resolve, reject) => {
+      let timeoutId
+      if (this._defaultTimeout > -1) {
+        timeoutId = setTimeout(() => {
+          delete this._receivers[sequence]
+          reject(new Error('Timeout'))
+        }, this._defaultTimeout)
+      }
+      this._receivers[sequence] = { resolve, reject, timeoutId }
+    })
   }
 }

@@ -63,7 +63,7 @@ export class Chatty {
    * client to communicate with the host.
    */
 
-  static createHostFromSource (source?: string) {
+  static createHostFromSource (source: string) {
     return new ChattyHostBuilder(undefined, source)
   }
 
