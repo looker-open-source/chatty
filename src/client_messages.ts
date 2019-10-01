@@ -37,5 +37,7 @@ export enum ChattyClientMessages {
   /** Message that expects a response */
   MessageWithResponse,
   /** Response */
-  Response
+  Response,
+  /** Asynchronous error response */
+  ResponseError
 }

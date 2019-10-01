@@ -45,3 +45,9 @@ export interface CallbackStore {
 export interface MethodStore {
   [name: string]: (...args: any[]) => any
 }
+
+export interface Receiver {
+  resolve: (value?: any) => void
+  reject: (value?: any) => void
+  timeoutId: any
+}

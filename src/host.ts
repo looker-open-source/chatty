@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { CallbackStore } from './types'
+import { CallbackStore, Receiver } from './types'
 import { ChattyHostBuilder } from './host_builder'
 import { ChattyClientMessages } from './client_messages'
 import { ChattyHostMessages } from './host_messages'
@@ -56,7 +56,9 @@ export interface ChattyHostConnection {
   send (eventName: string, ...payload: any[]): void
 
   /**
-   * Send a message to the client via a message channel, and then await a response.
+   * Send a message to the client via a message channel and then await a response.
+   * The event listener in the client returns a value or a promise that is resolved
+   * at some later point.
    *
    * @param eventName The name of the event to send to the client
    * @param payload Additional data to send to client. Restricted to transferable objects, ownership of the
@@ -91,7 +93,7 @@ export class ChattyHost {
   private _state = ChattyHostStates.Connecting
   private _defaultTimeout: number
   private _sequence = 0
-  private _receivers: {[key: number]: (value?: any) => void} = {}
+  private _receivers: {[key: number]: Receiver} = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
@@ -161,14 +163,17 @@ export class ChattyHost {
                   const sequence = ++this._sequence
                   this.sendMsg(ChattyHostMessages.MessageWithResponse, { eventName, payload }, sequence)
                   return new Promise<any>((resolve, reject) => {
-                    this._receivers[sequence] = resolve
-
-                    setTimeout(() => {
-                      delete this._receivers[sequence]
-                      reject(new Error('Timeout'))
-                    }, this._defaultTimeout)
+                    let timeoutId
+                    if (this._defaultTimeout > -1) {
+                      timeoutId = setTimeout(() => {
+                        delete this._receivers[sequence]
+                        reject(new Error('Timeout'))
+                      }, this._defaultTimeout)
+                    }
+                    this._receivers[sequence] = { resolve, reject, timeoutId }
                   })
                 }
+
               })
               break
             case ChattyClientMessages.Message:
@@ -177,21 +182,47 @@ export class ChattyHost {
               }
               break
             case ChattyClientMessages.MessageWithResponse:
-              const { eventName, payload, sequence } = evt.data.data
-              let results = []
-              if (this._handlers[eventName]) {
-                results = this._handlers[eventName].map(
-                  fn => fn.apply(this, payload)
-                )
+              {
+                const { eventName, payload, sequence } = evt.data.data
+                let results: any = []
+                if (this._handlers[eventName]) {
+                  results = this._handlers[eventName].map(
+                    fn => fn.apply(this, payload)
+                  )
+                }
+                Promise.all(results)
+                  .then(resolvedResults => {
+                    this.sendMsg(ChattyHostMessages.Response, { eventName, payload: resolvedResults }, sequence)
+                  })
+                  .catch(error => {
+                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: error }, sequence)
+                  })
               }
-              this.sendMsg(ChattyHostMessages.Response, { eventName, payload: results }, sequence)
               break
             case ChattyClientMessages.Response:
-              const receiver = this._receivers[evt.data.data.sequence]
-              if (receiver) {
-                delete this._receivers[evt.data.data.sequence]
-                receiver(evt.data.data.payload)
+              {
+                const receiver = this._receivers[evt.data.data.sequence]
+                if (receiver) {
+                  delete this._receivers[evt.data.data.sequence]
+                  if (receiver.timeoutId) {
+                    clearTimeout(receiver.timeoutId)
+                  }
+                  receiver.resolve(evt.data.data.payload)
+                }
               }
+              break
+            case ChattyClientMessages.ResponseError:
+              {
+                const receiver = this._receivers[evt.data.data.sequence]
+                if (receiver) {
+                  delete this._receivers[evt.data.data.sequence]
+                  if (receiver.timeoutId) {
+                    clearTimeout(receiver.timeoutId)
+                  }
+                  receiver.reject(evt.data.data.payload)
+                }
+              }
+              break
           }
         }
 
@@ -251,4 +282,5 @@ export class ChattyHost {
     if (this._targetOrigin && !(this._targetOrigin === '*' || this._targetOrigin === evt.origin)) return false
     return true
   }
+
 }

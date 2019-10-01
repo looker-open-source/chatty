@@ -30,6 +30,20 @@ the client with `send(eventName, data)`
     .catch(console.error)
 ```
 
+The client iframe can also be created using source from the `createHostFromSource(source)` method.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createHostFromSource(`
+      <html>
+        <body>
+          <script src='//example.com/client.js' type="application/javascript" />
+        </body>
+      </html>
+  `)
+```
+
 The client `iframe` creates its client using `createClient()`. It also adds event listeners, builds the
 client and connects. Once connected, it can send messages to its host.
 
@@ -90,6 +104,48 @@ The client simply returns the text value of its title in the event handler.
 ```
 
 The results provided by the promise are an array because their may be multiple handlers for a given event. If there are no event handlers for a given action the array will be empty.
+
+## Sending and receiving asynchronous responses
+
+The `sendAndReceive` method can also be used for data that needs to be retrieved asynchronously. In this scenario
+the target function must return a Promise.
+
+In the following example, the host requests that the client return some data that is to be retrieved asynchronously.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createHost('//example.com/client.html')
+    .build()
+    .connect()
+    .then(client => {
+      document.querySelector('#get-title')!.addEventListener('click', () => {
+        client.sendAndReceive(Actions.GET_TITLE, (payload: any[]) => {
+          const title: Element = document.querySelector('#got-title')!
+          title.innerHTML = payload[0]
+        }
+      })
+    })
+    .catch(console.error)
+```
+
+The client message handler returns a `Promise`.
+
+```typescript
+  import { Chatty } from 'chatty'
+
+  Chatty.createClient()
+    .on(Actions.GET_TITLE, () => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(document.querySelector('title')!.text)
+        }, 200)
+      })
+    })
+    .build()
+    .connect()
+    .catch(console.error)
+```
 
 ## Getting Started
 
