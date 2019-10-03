@@ -2,7 +2,6 @@
 .npmrc
 .vscode
 demo/build
-docs
 lib
 node_modules
 coverage
