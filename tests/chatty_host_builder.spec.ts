@@ -127,6 +127,12 @@ describe('ChattyHostBuilder', () => {
     expect(host.sandboxAttrs).toContain('allow-scripts')
   })
 
+  it('should add an allow attribute', () => {
+    const host = Chatty.createHost(url)
+      .withAllowAttribute('geolocation')
+    expect(host.allowAttrs).toContain('geolocation')
+  })
+
   it('should set frame border (deprecated)', () => {
     const host = Chatty.createHost(url)
       .frameBorder('1')

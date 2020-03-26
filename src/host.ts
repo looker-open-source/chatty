@@ -103,6 +103,9 @@ export class ChattyHost {
   constructor (builder: ChattyHostBuilder) {
     this.iframe = document.createElement('iframe')
     builder.sandboxAttrs.forEach(attr => this.iframe.sandbox.add(attr))
+    if ('allow' in this.iframe) {
+      this.iframe.allow = builder.allowAttrs.join('; ')
+    }
     // tslint:disable-next-line:deprecation
     this.iframe.frameBorder = builder.getFrameBorder()
     if (builder.url) {
