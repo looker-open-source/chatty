@@ -297,7 +297,7 @@ describe('ChattyHost', () => {
           connecting.then((connection) => {
             connection.sendAndReceive(eventName, payload)
               .then(() => void 0)
-              .catch(done)
+              .catch(() => done())
             expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyHostMessages.MessageWithResponse)
             expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
             expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
@@ -533,6 +533,14 @@ describe('ChattyHost', () => {
         .sandbox('allow-scripts')
         .build()
       expect(host.iframe.sandbox.toString()).toEqual('allow-scripts')
+    })
+
+    it('should apply appropriate allow values', () => {
+      host = Chatty.createHost(url)
+        .withAllowAttribute('geolocation')
+        .withAllowAttribute('serial')
+        .build()
+      expect(host.iframe.allow).toEqual('geolocation; serial')
     })
   })
 })

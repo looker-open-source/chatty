@@ -33,6 +33,7 @@ export class ChattyHostBuilder {
   private _appendTo: HTMLElement | null = null
   private _handlers: CallbackStore = {}
   private _sandboxAttrs: string[] = []
+  private _allowAttrs: string[] = []
   private _frameBorder: string = '0'
   private _targetOrigin: string | null = null
   private _defaultTimeout = 30000
@@ -50,6 +51,10 @@ export class ChattyHostBuilder {
 
   get sandboxAttrs () {
     return this._sandboxAttrs
+  }
+
+  get allowAttrs () {
+    return this._allowAttrs
   }
 
   get targetOrigin () {
@@ -144,13 +149,24 @@ export class ChattyHostBuilder {
   }
 
   /**
-   * Create the iframe with the give sandbox attribute
+   * Create the iframe with the given sandbox attribute
    *
    * @param attr The sandbox attribute
    */
 
   withSandboxAttribute (attr: string) {
     this._sandboxAttrs.push(attr)
+    return this
+  }
+
+  /**
+   * Create the iframe with the given allow attribute
+   *
+   * @param attr The sandbox attribute
+   */
+
+  withAllowAttribute (attr: string) {
+    this._allowAttrs.push(attr)
     return this
   }
 

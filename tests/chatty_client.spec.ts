@@ -162,7 +162,7 @@ describe('ChattyClient', function () {
           connecting.then((connection) => {
             connection.sendAndReceive(eventName, payload)
               .then(() => void 0)
-              .catch(done)
+              .catch(() => done())
             expect(client.sendMsg.calls.argsFor(1)[0]).toEqual(ChattyClientMessages.MessageWithResponse)
             expect(client.sendMsg.calls.argsFor(1)[1]).toEqual({ eventName, payload: [payload] })
             expect(client.sendMsg.calls.argsFor(1)[2]).toEqual(jasmine.any(Number))
