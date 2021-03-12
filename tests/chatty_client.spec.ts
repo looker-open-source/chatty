@@ -40,6 +40,7 @@ describe('ChattyClient', function () {
     return new Promise((_resolve, reject) => {
       setTimeout(() => {
         reject (new Error('Break Down'))
+        window.postMessage('ClientBreakDown', "*")
       })
     })
   }
@@ -368,13 +369,15 @@ describe('ChattyClient', function () {
               }
             })
 
-            setTimeout(() => {
-              expect(client.sendMsg).toHaveBeenCalledWith(
-                ChattyClientMessages.ResponseError,
-                { eventName: 'bash', payload: { message: 'Break Down', name: 'Error', fileName: undefined, lineNumber: undefined, columnNumber: undefined } },
-                1)
-              done()
-            }, 100) // ugly timeout - need to wait for breakDanceAsync to resolve
+            window.addEventListener('message', (event) => {
+              if (event.data === 'ClientBreakDown') {
+                expect(client.sendMsg).toHaveBeenCalledWith(
+                  ChattyClientMessages.ResponseError,
+                  { eventName: 'bash', payload: { message: 'Break Down', name: 'Error', fileName: undefined, lineNumber: undefined, columnNumber: undefined } },
+                  1)
+                done()
+              }
+            }, false)
           }).catch(console.error)
         })
 
