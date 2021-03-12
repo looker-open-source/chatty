@@ -173,7 +173,7 @@ export class ChattyClient {
                   this.sendMsg(ChattyClientMessages.Response, { eventName, payload: resolvedResults }, sequence)
                 })
                 .catch(error => {
-                  this.sendMsg(ChattyClientMessages.ResponseError, { eventName, payload: error }, sequence)
+                  this.sendMsg(ChattyClientMessages.ResponseError, { eventName, payload: error.toString() }, sequence)
                 })
             }
             break
@@ -195,7 +195,8 @@ export class ChattyClient {
                 if (receiver.timeoutId) {
                   clearTimeout(receiver.timeoutId)
                 }
-                receiver.reject(evt.data.data.payload)
+                receiver.reject(typeof evt.data.data.payload === 'string' ?
+                  new Error(evt.data.data.payload) : evt.data.data.payload)
               }
             }
             break

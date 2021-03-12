@@ -48,6 +48,15 @@ const doHandshake = () => {
 }
 
 describe('ChattyHost', () => {
+  const breakDanceAsync = () => {
+    return new Promise((_resolve, reject) => {
+      setTimeout(() => {
+        reject (new Error('Break Down'))
+        window.postMessage('HostBreakDown', "*")
+      })
+    })
+  }
+
   beforeEach(() => {
     eventName = 'EVENT'
     payload = { status: 'lit' }
@@ -435,6 +444,7 @@ describe('ChattyHost', () => {
           danceAsync = jasmine.createSpy('dance').and.returnValue(p)
           host = Chatty.createHost(url)
             .on('party', danceAsync)
+            .on('bash', breakDanceAsync)
             .build()
 
           spyOn(host, 'isValidMsg').and.returnValue(true)
@@ -464,6 +474,33 @@ describe('ChattyHost', () => {
               )
               done()
             })
+          }).catch(console.error)
+        })
+
+        it('should convert errors', function (done) {
+          doHandshake()
+
+          connecting.then(() => {
+            channel.port1.postMessage({
+              action: ChattyClientMessages.MessageWithResponse,
+              data: {
+                eventName: 'bash',
+                payload: {
+                  status: 'lit'
+                },
+                sequence: 1
+              }
+            })
+
+            window.addEventListener('message', (event) => {
+              if (event.data === 'HostBreakDown') {
+                expect(host.sendMsg).toHaveBeenCalledWith(
+                  ChattyHostMessages.ResponseError,
+                  { eventName: 'bash', payload: 'Error: Break Down' },
+                  1)
+                  done()
+              }
+            }, false)
           }).catch(console.error)
         })
 
