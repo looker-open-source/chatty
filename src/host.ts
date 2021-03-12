@@ -198,15 +198,7 @@ export class ChattyHost {
                     this.sendMsg(ChattyHostMessages.Response, { eventName, payload: resolvedResults }, sequence)
                   })
                   .catch(error => {
-                    const { message, name, fileName, lineNumber, columnNumber } = error
-                    const serializableError = {
-                      message,
-                      name,
-                      fileName,
-                      lineNumber,
-                      columnNumber
-                    }
-                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: serializableError }, sequence)
+                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: error.toString() }, sequence)
                   })
               }
               break
@@ -230,7 +222,8 @@ export class ChattyHost {
                   if (receiver.timeoutId) {
                     clearTimeout(receiver.timeoutId)
                   }
-                  receiver.reject(evt.data.data.payload)
+                  receiver.reject(typeof evt.data.data.payload === 'string' ?
+                    new Error(evt.data.data.payload) : evt.data.data.payload)
                 }
               }
               break

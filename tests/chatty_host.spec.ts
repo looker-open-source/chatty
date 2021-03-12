@@ -496,7 +496,7 @@ describe('ChattyHost', () => {
               if (event.data === 'HostBreakDown') {
                 expect(host.sendMsg).toHaveBeenCalledWith(
                   ChattyHostMessages.ResponseError,
-                  { eventName: 'bash', payload: { message: 'Break Down', name: 'Error', fileName: undefined, lineNumber: undefined, columnNumber: undefined } },
+                  { eventName: 'bash', payload: 'Error: Break Down' },
                   1)
                   done()
               }

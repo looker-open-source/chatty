@@ -373,7 +373,7 @@ describe('ChattyClient', function () {
               if (event.data === 'ClientBreakDown') {
                 expect(client.sendMsg).toHaveBeenCalledWith(
                   ChattyClientMessages.ResponseError,
-                  { eventName: 'bash', payload: { message: 'Break Down', name: 'Error', fileName: undefined, lineNumber: undefined, columnNumber: undefined } },
+                  { eventName: 'bash', payload: 'Error: Break Down' },
                   1)
                 done()
               }
