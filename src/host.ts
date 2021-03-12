@@ -198,7 +198,15 @@ export class ChattyHost {
                     this.sendMsg(ChattyHostMessages.Response, { eventName, payload: resolvedResults }, sequence)
                   })
                   .catch(error => {
-                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: error }, sequence)
+                    const { message, name, fileName, lineNumber, columnNumber } = error
+                    const serializableError = {
+                      message,
+                      name,
+                      fileName,
+                      lineNumber,
+                      columnNumber
+                    }
+                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: serializableError }, sequence)
                   })
               }
               break

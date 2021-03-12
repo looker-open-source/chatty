@@ -36,6 +36,14 @@ let dance
 let danceAsync
 
 describe('ChattyClient', function () {
+  const breakDanceAsync = () => {
+    return new Promise((_resolve, reject) => {
+      setTimeout(() => {
+        reject (new Error('Break Down'))
+      })
+    })
+  }
+
   beforeEach(() => {
     eventName = 'EVENT'
     payload = 'payload'
@@ -311,6 +319,7 @@ describe('ChattyClient', function () {
           danceAsync = jasmine.createSpy('dance').and.returnValue(p)
           client = Chatty.createClient()
             .on('party', danceAsync)
+            .on('bash', breakDanceAsync)
             .build()
 
           spyOn(client, 'initiateHandshake')
@@ -345,6 +354,30 @@ describe('ChattyClient', function () {
             })
           }).catch(console.error)
         })
+
+        it('should convert errors', function (done) {
+          connecting.then(() => {
+            client._channel.port2.postMessage({
+              action: ChattyHostMessages.MessageWithResponse,
+              data: {
+                eventName: 'bash',
+                payload: {
+                  status: 'lit'
+                },
+                sequence: 1
+              }
+            })
+
+            setTimeout(() => {
+              expect(client.sendMsg).toHaveBeenCalledWith(
+                ChattyClientMessages.ResponseError,
+                { eventName: 'bash', payload: { message: 'Break Down', name: 'Error', fileName: undefined, lineNumber: undefined, columnNumber: undefined } },
+                1)
+              done()
+            }, 100) // ugly timeout - need to wait for breakDanceAsync to resolve
+          }).catch(console.error)
+        })
+
 
         it('should ignore unknown events', function (done) {
           connecting.then(() => {
