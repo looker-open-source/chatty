@@ -1,28 +1,30 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2021 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { Callback, CallbackStore } from './types'
+import type { Callback, CallbackStore } from './types'
 import { ChattyHost } from './host'
 
 /**
@@ -34,42 +36,42 @@ export class ChattyHostBuilder {
   private _handlers: CallbackStore = {}
   private _sandboxAttrs: string[] = []
   private _allowAttrs: string[] = []
-  private _frameBorder: string = '0'
+  private _frameBorder = '0'
   private _targetOrigin: string | null = null
   private _defaultTimeout = 30000
 
   /** @hidden */
-  constructor (private _url?: string, private _source?: string) {}
+  constructor(private _url?: string, private _source?: string) {}
 
-  get el () {
+  get el() {
     return this._appendTo || document.body
   }
 
-  get handlers () {
+  get handlers() {
     return this._handlers
   }
 
-  get sandboxAttrs () {
+  get sandboxAttrs() {
     return this._sandboxAttrs
   }
 
-  get allowAttrs () {
+  get allowAttrs() {
     return this._allowAttrs
   }
 
-  get targetOrigin () {
+  get targetOrigin() {
     return this._targetOrigin
   }
 
-  get url () {
+  get url() {
     return this._url
   }
 
-  get source () {
+  get source() {
     return this._source
   }
 
-  get defaultTimeout () {
+  get defaultTimeout() {
     return this._defaultTimeout
   }
 
@@ -79,7 +81,7 @@ export class ChattyHostBuilder {
    * @returns the host builder
    */
 
-  appendTo (el: HTMLElement) {
+  appendTo(el: HTMLElement) {
     this._appendTo = el
     return this
   }
@@ -92,9 +94,11 @@ export class ChattyHostBuilder {
    * @returns the host builder
    */
 
-  off (name: string, fn: Callback) {
+  off(name: string, fn: Callback) {
     if (this._handlers[name]) {
-      this._handlers[name] = this._handlers[name].filter((handler) => handler !== fn)
+      this._handlers[name] = this._handlers[name].filter(
+        (handler) => handler !== fn
+      )
     }
   }
 
@@ -109,7 +113,7 @@ export class ChattyHostBuilder {
    * @returns the host builder
    */
 
-  on (name: string, fn: Callback) {
+  on(name: string, fn: Callback) {
     this._handlers[name] = this._handlers[name] || []
     this._handlers[name].push(fn)
     return this
@@ -123,27 +127,27 @@ export class ChattyHostBuilder {
    * @returns the host builder
    */
 
-  withDefaultTimeout (timeout: number) {
+  withDefaultTimeout(timeout: number) {
     this._defaultTimeout = timeout
     return this
   }
 
   /** @deprecated The frame-board attribute is deprecated, use CSS instead */
 
-  getFrameBorder () {
+  getFrameBorder() {
     return this._frameBorder
   }
 
   /** @deprecated The frame-board attribute is deprecated, use CSS instead */
 
-  frameBorder (attr: string) {
+  frameBorder(attr: string) {
     this._frameBorder = attr
     return this
   }
 
   /** @deprecated Replaced by [[withSandboxAttribute]] */
 
-  sandbox (attr: string) {
+  sandbox(attr: string) {
     this.withSandboxAttribute(attr)
     return this
   }
@@ -154,7 +158,7 @@ export class ChattyHostBuilder {
    * @param attr The sandbox attribute
    */
 
-  withSandboxAttribute (attr: string) {
+  withSandboxAttribute(attr: string) {
     this._sandboxAttrs.push(attr)
     return this
   }
@@ -165,7 +169,7 @@ export class ChattyHostBuilder {
    * @param attr The sandbox attribute
    */
 
-  withAllowAttribute (attr: string) {
+  withAllowAttribute(attr: string) {
     this._allowAttrs.push(attr)
     return this
   }
@@ -178,7 +182,7 @@ export class ChattyHostBuilder {
    * @param targetOrigin
    */
 
-  withTargetOrigin (targetOrigin: string) {
+  withTargetOrigin(targetOrigin: string) {
     this._targetOrigin = targetOrigin
     return this
   }
@@ -187,7 +191,7 @@ export class ChattyHostBuilder {
    * Builds a [[ChattyHost]] with the provided properties.
    */
 
-  build () {
+  build() {
     return new ChattyHost(this)
   }
 }

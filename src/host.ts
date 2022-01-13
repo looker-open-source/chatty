@@ -1,33 +1,35 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2021 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { CallbackStore, Receiver } from './types'
-import { ChattyHostBuilder } from './host_builder'
+import * as debugLib from 'debug'
+import type { CallbackStore, Receiver } from './types'
+import type { ChattyHostBuilder } from './host_builder'
 import { ChattyClientMessages } from './client_messages'
 import { ChattyHostMessages } from './host_messages'
 import 'es6-promise/auto' // Polyfill only browsers without Promises
-import * as debugLib from 'debug'
 
 /**
  * @private
@@ -37,7 +39,7 @@ import * as debugLib from 'debug'
 export enum ChattyHostStates {
   Connecting,
   SynAck,
-  Connected
+  Connected,
 }
 
 /**
@@ -53,7 +55,7 @@ export interface ChattyHostConnection {
    * object will be transferred to the client.
    */
 
-  send (eventName: string, ...payload: any[]): void
+  send(eventName: string, ...payload: any[]): void
 
   /**
    * Send a message to the client via a message channel and then await a response.
@@ -68,7 +70,7 @@ export interface ChattyHostConnection {
    * response will be an array containing all responses from any registered event handlers on the client.
    */
 
-  sendAndReceive (eventName: string, ...payload: any[]): Promise<any>
+  sendAndReceive(eventName: string, ...payload: any[]): Promise<any>
 }
 
 /**
@@ -93,16 +95,16 @@ export class ChattyHost {
   private _state = ChattyHostStates.Connecting
   private _defaultTimeout: number
   private _sequence = 0
-  private _receivers: {[key: number]: Receiver} = {}
+  private _receivers: { [key: number]: Receiver } = {}
 
   /**
    * @param builder The client builder that is responsible for constructing this object.
    * @hidden
    */
 
-  constructor (builder: ChattyHostBuilder) {
+  constructor(builder: ChattyHostBuilder) {
     this.iframe = document.createElement('iframe')
-    builder.sandboxAttrs.forEach(attr => this.iframe.sandbox.add(attr))
+    builder.sandboxAttrs.forEach((attr) => this.iframe.sandbox.add(attr))
     if ('allow' in this.iframe) {
       this.iframe.allow = builder.allowAttrs.join('; ')
     }
@@ -126,7 +128,7 @@ export class ChattyHost {
    * @returns a Promise to an object that resolves when the client initiates the connection.
    */
 
-  get connection () {
+  get connection() {
     return this._connection
   }
 
@@ -134,7 +136,7 @@ export class ChattyHost {
    * @returns a flag indicating whether the client successfully connected to the host.
    */
 
-  get isConnected () {
+  get isConnected() {
     return this._state === ChattyHostStates.Connected
   }
 
@@ -146,7 +148,7 @@ export class ChattyHost {
    * object implements the [[ChattyHostConnection]] that can be used to talk to the host.
    */
 
-  async connect (): Promise<ChattyHostConnection> {
+  async connect(): Promise<ChattyHostConnection> {
     if (this._connection) return this._connection
 
     const createConnection = async () => {
@@ -159,12 +161,22 @@ export class ChattyHost {
               this._state = ChattyHostStates.Connected
               resolve({
                 send: (eventName: string, ...payload: any[]) => {
-                  this.sendMsg(ChattyHostMessages.Message, { eventName, payload })
+                  this.sendMsg(ChattyHostMessages.Message, {
+                    eventName,
+                    payload,
+                  })
                 },
 
-                sendAndReceive: async (eventName: string, ...payload: any[]) => {
+                sendAndReceive: async (
+                  eventName: string,
+                  ...payload: any[]
+                ) => {
                   const sequence = ++this._sequence
-                  this.sendMsg(ChattyHostMessages.MessageWithResponse, { eventName, payload }, sequence)
+                  this.sendMsg(
+                    ChattyHostMessages.MessageWithResponse,
+                    { eventName, payload },
+                    sequence
+                  )
                   return new Promise<any>((resolve, reject) => {
                     let timeoutId
                     if (this._defaultTimeout > -1) {
@@ -173,15 +185,16 @@ export class ChattyHost {
                         reject(new Error('Timeout'))
                       }, this._defaultTimeout)
                     }
-                    this._receivers[sequence] = { resolve, reject, timeoutId }
+                    this._receivers[sequence] = { reject, resolve, timeoutId }
                   })
-                }
-
+                },
               })
               break
             case ChattyClientMessages.Message:
               if (this._handlers[evt.data.data.eventName]) {
-                this._handlers[evt.data.data.eventName].forEach(fn => fn.apply(this, evt.data.data.payload))
+                this._handlers[evt.data.data.eventName].forEach((fn) =>
+                  fn.apply(this, evt.data.data.payload)
+                )
               }
               break
             case ChattyClientMessages.MessageWithResponse:
@@ -189,16 +202,24 @@ export class ChattyHost {
                 const { eventName, payload, sequence } = evt.data.data
                 let results: any = []
                 if (this._handlers[eventName]) {
-                  results = this._handlers[eventName].map(
-                    fn => fn.apply(this, payload)
+                  results = this._handlers[eventName].map((fn) =>
+                    fn.apply(this, payload)
                   )
                 }
                 Promise.all(results)
-                  .then(resolvedResults => {
-                    this.sendMsg(ChattyHostMessages.Response, { eventName, payload: resolvedResults }, sequence)
+                  .then((resolvedResults) => {
+                    this.sendMsg(
+                      ChattyHostMessages.Response,
+                      { eventName, payload: resolvedResults },
+                      sequence
+                    )
                   })
-                  .catch(error => {
-                    this.sendMsg(ChattyHostMessages.ResponseError, { eventName, payload: error.toString() }, sequence)
+                  .catch((error) => {
+                    this.sendMsg(
+                      ChattyHostMessages.ResponseError,
+                      { eventName, payload: error.toString() },
+                      sequence
+                    )
                   })
               }
               break
@@ -222,8 +243,11 @@ export class ChattyHost {
                   if (receiver.timeoutId) {
                     clearTimeout(receiver.timeoutId)
                   }
-                  receiver.reject(typeof evt.data.data.payload === 'string' ?
-                    new Error(evt.data.data.payload) : evt.data.data.payload)
+                  receiver.reject(
+                    typeof evt.data.data.payload === 'string'
+                      ? new Error(evt.data.data.payload)
+                      : evt.data.data.payload
+                  )
                 }
               }
               break
@@ -242,7 +266,10 @@ export class ChattyHost {
               if (this._port) {
                 // If targetOrigin is set and we receive another Syn, the frame has potentially
                 // navigated to another valid webpage and we should re-connect
-                if (this._targetOrigin && this._targetOrigin === '*' || this._targetOrigin === evt.origin) {
+                if (
+                  (this._targetOrigin && this._targetOrigin === '*') ||
+                  this._targetOrigin === evt.origin
+                ) {
                   ChattyHost._debug('reconnecting to', evt.origin)
                   this._port.close()
                 } else {
@@ -263,10 +290,14 @@ export class ChattyHost {
     }
 
     this._appendTo.appendChild(this.iframe)
-    return this._connection = createConnection()
+    return (this._connection = createConnection())
   }
 
-  private sendMsg (action: ChattyHostMessages, data: object = {}, sequence?: number) {
+  private sendMsg(
+    action: ChattyHostMessages,
+    data: Record<string, unknown> = {},
+    sequence?: number
+  ) {
     const sequenceData = sequence ? { sequence } : {}
     const dataWithSequence = { ...data, ...sequenceData }
     ChattyHost._debug('sending', action, dataWithSequence)
@@ -281,10 +312,13 @@ export class ChattyHost {
   // is the one we have access to from the parent frame.  This method is described here:
   // https://www.html5rocks.com/en/tutorials/security/sandboxed-iframes/#safely-sandboxing-eval
   // If sandboxing is not enabled targetOrigin can be set and validated
-  private isValidMsg (evt: MessageEvent) {
+  private isValidMsg(evt: MessageEvent) {
     if (evt.source !== this.iframe.contentWindow) return false
-    if (this._targetOrigin && !(this._targetOrigin === '*' || this._targetOrigin === evt.origin)) return false
+    if (
+      this._targetOrigin &&
+      !(this._targetOrigin === '*' || this._targetOrigin === evt.origin)
+    )
+      return false
     return true
   }
-
 }

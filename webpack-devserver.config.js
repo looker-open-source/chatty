@@ -1,6 +1,6 @@
-var path = require('path')
+const path = require('path')
 
-var webpackConfig = {
+const webpackConfig = {
   mode: 'development',
   entry: {
     demo: './demo/demo.ts',
