@@ -1,6 +1,7 @@
 var path = require('path')
 
 var webpackConfig = {
+  mode: 'development',
   entry: {
     demo: './demo/demo.ts',
     demo_client: './demo/client_demo.ts'
@@ -43,11 +44,14 @@ var webpackConfig = {
   devtool: 'inline-source-map',
   devServer: {
     compress: true,
-    contentBase: [
-      path.join(__dirname, "demo"),
-      path.join(__dirname, "demo", "build")
-    ],
-    watchContentBase: true
+    static: {
+      directory: path.resolve(__dirname, 'demo'),
+      staticOptions: {},
+      watch: true,
+    },
+    devMiddleware: {
+      publicPath: '/',
+    }
   }
 }
 
