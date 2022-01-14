@@ -1,28 +1,30 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2021 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { Callback, CallbackStore } from './types'
+import type { Callback, CallbackStore } from './types'
 import { ChattyClient } from './client'
 
 /**
@@ -34,15 +36,15 @@ export class ChattyClientBuilder {
   private _handlers: CallbackStore = {}
   private _defaultTimeout = 30000
 
-  get targetOrigin () {
+  get targetOrigin() {
     return this._targetOrigin
   }
 
-  get handlers () {
+  get handlers() {
     return this._handlers
   }
 
-  get defaultTimeout () {
+  get defaultTimeout() {
     return this._defaultTimeout
   }
 
@@ -54,9 +56,11 @@ export class ChattyClientBuilder {
    * @returns the client builder
    */
 
-  off (name: string, fn: Callback) {
+  off(name: string, fn: Callback) {
     if (this._handlers[name]) {
-      this._handlers[name] = this._handlers[name].filter((handler) => handler !== fn)
+      this._handlers[name] = this._handlers[name].filter(
+        (handler) => handler !== fn
+      )
     }
   }
 
@@ -71,7 +75,7 @@ export class ChattyClientBuilder {
    * @returns the client builder
    */
 
-  on (name: string, fn: Callback) {
+  on(name: string, fn: Callback) {
     this._handlers[name] = this._handlers[name] || []
     this._handlers[name].push(fn)
     return this
@@ -86,7 +90,7 @@ export class ChattyClientBuilder {
    * @returns the client builder
    */
 
-  withDefaultTimeout (timeout: number) {
+  withDefaultTimeout(timeout: number) {
     this._defaultTimeout = timeout
     return this
   }
@@ -99,7 +103,7 @@ export class ChattyClientBuilder {
    * @returns the client builder
    */
 
-  withTargetOrigin (targetOrigin: string) {
+  withTargetOrigin(targetOrigin: string) {
     this._targetOrigin = targetOrigin
     return this
   }
@@ -109,7 +113,7 @@ export class ChattyClientBuilder {
    * @returns a new Chatty client.
    */
 
-  build () {
+  build() {
     return new ChattyClient(this)
   }
 }

@@ -353,7 +353,7 @@ describe('ChattyClient', function () {
                 1)
               done()
             })
-          }).catch(console.error)
+          }).catch(done.fail)
         })
 
         it('should convert errors', function (done) {
@@ -392,7 +392,7 @@ describe('ChattyClient', function () {
             })
 
             setTimeout(() => {
-              expect(dance).not.toHaveBeenCalled()
+              expect(danceAsync).not.toHaveBeenCalled()
               expect(client.sendMsg).not.toHaveBeenCalledWith(
                 ChattyClientMessages.Response,
                 { eventName: 'party', payload: [{ lit: 'done' }] },
