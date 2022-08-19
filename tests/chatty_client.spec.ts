@@ -36,6 +36,8 @@ let dance
 let danceAsync
 
 describe('ChattyClient', function () {
+  const WAIT = 100
+
   const breakDanceAsync = () => {
     return new Promise((_resolve, reject) => {
       setTimeout(() => {
@@ -228,7 +230,7 @@ describe('ChattyClient', function () {
             setTimeout(() => {
               expect(dance).toHaveBeenCalled()
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
 
@@ -244,7 +246,7 @@ describe('ChattyClient', function () {
             setTimeout(() => {
               expect(dance).not.toHaveBeenCalled()
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
@@ -285,7 +287,7 @@ describe('ChattyClient', function () {
                 { eventName: 'party', payload: [{ lit: true }] },
                 1)
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
 
@@ -305,7 +307,7 @@ describe('ChattyClient', function () {
                 { eventName: 'party', payload: [{ lit: true }] },
                 1)
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
@@ -352,7 +354,7 @@ describe('ChattyClient', function () {
                 { eventName: 'party', payload: [{ lit: 'done' }] },
                 1)
               done()
-            })
+            }, WAIT)
           }).catch(done.fail)
         })
 
@@ -398,7 +400,7 @@ describe('ChattyClient', function () {
                 { eventName: 'party', payload: [{ lit: 'done' }] },
                 1)
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
