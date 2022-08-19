@@ -48,6 +48,8 @@ const doHandshake = () => {
 }
 
 describe('ChattyHost', () => {
+  const WAIT = 100
+
   const breakDanceAsync = () => {
     return new Promise((_resolve, reject) => {
       setTimeout(() => {
@@ -225,7 +227,7 @@ describe('ChattyHost', () => {
               expect(host.sendMsg).toHaveBeenCalledWith(ChattyHostMessages.SynAck)
               expect(host._port).toEqual(channel2.port2)
               done()
-            })
+            }, WAIT)
           })
 
           it('should reconnect if the targetOrigin is set to the iframe origin', (done) => {
@@ -237,7 +239,7 @@ describe('ChattyHost', () => {
               expect(host.sendMsg).toHaveBeenCalledWith(ChattyHostMessages.SynAck)
               expect(host._port).toEqual(channel2.port2)
               done()
-            })
+            }, WAIT)
           })
 
           it('should ignore if the targetOrigin is not set', (done) => {
@@ -249,7 +251,7 @@ describe('ChattyHost', () => {
               expect(host.sendMsg).not.toHaveBeenCalled()
               expect(host._port).toEqual(channel.port2)
               done()
-            })
+            }, WAIT)
           })
 
           it('should ignore if the targetOrigin does not match', (done) => {
@@ -262,7 +264,7 @@ describe('ChattyHost', () => {
               expect(host._port).toEqual(channel.port2)
               done()
             })
-          })
+          }, WAIT)
         })
       })
 
@@ -352,7 +354,7 @@ describe('ChattyHost', () => {
             setTimeout(() => {
               expect(dance).toHaveBeenCalled()
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
 
@@ -369,7 +371,7 @@ describe('ChattyHost', () => {
             setTimeout(() => {
               expect(dance).not.toHaveBeenCalled()
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
@@ -407,7 +409,7 @@ describe('ChattyHost', () => {
                 1
               )
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
 
@@ -429,7 +431,7 @@ describe('ChattyHost', () => {
                 1
               )
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
@@ -473,7 +475,7 @@ describe('ChattyHost', () => {
                 1
               )
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
 
@@ -522,7 +524,7 @@ describe('ChattyHost', () => {
                 1
               )
               done()
-            })
+            }, WAIT)
           }).catch(console.error)
         })
       })
