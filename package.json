@@ -11,8 +11,8 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">=16.16.0",
-    "npm": ">=8.18.0"
+    "node": ">=14.0.0",
+    "npm": ">=8.0.0"
   },
   "scripts": {
     "build": "tsc",
