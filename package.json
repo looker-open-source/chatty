@@ -1,6 +1,6 @@
 {
   "name": "@looker/chatty",
-  "version": "2.3.2",
+  "version": "2.3.4",
   "description": "A simple postMessage host / client channel manager.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -16,9 +16,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "docs": "typedoc --mode file --out docs",
-    "lint": "eslint --format stylish 'src/**/*.ts'",
-    "lint-fix": "eslint --fix --project tsconfig.json  --format stylish 'src/**/*.ts'",
+    "docs": "typedoc --gitRevision master --githubPages false --out docs src/index.ts",
+    "lint": "eslint --format stylish '**/*.ts'",
+    "lint-fix": "eslint --fix --format stylish '**/*.ts'",
     "start": "webpack-dev-server --config webpack-devserver.config.js --hot --open --color --progress",
     "prepare": "npm run build",
     "prepublishOnly": "npm run test-once",

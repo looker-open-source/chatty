@@ -1,50 +1,80 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Looker Data Sciences, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+
+ MIT License
+
+ Copyright (c) 2022 Looker Data Sciences, Inc.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
  */
 
-import { Chatty, ChattyHostConnection } from '../src/index'
+import type { ChattyHostConnection } from '../src/index'
+import { Chatty } from '../src/index'
 import { Actions } from './constants'
-import { Msg } from './types'
+import type { Msg } from './types'
 
 const doGetTitle = (client: ChattyHostConnection, id: number) => {
-  client.sendAndReceive(Actions.GET_TITLE).then((payload: any[]) => {
-    document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
-  }).catch(console.error)
+  client
+    .sendAndReceive(Actions.GET_TITLE)
+    .then((payload: any[]) => {
+      document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
+    })
+    .catch(console.error)
 }
 
 const doGetTitleAsync = (client: ChattyHostConnection, id: string) => {
-  client.sendAndReceive(Actions.GET_TITLE_ASYNC).then((payload: any[]) => {
-    document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
-  }).catch(console.error)
+  client
+    .sendAndReceive(Actions.GET_TITLE_ASYNC)
+    .then((payload: any[]) => {
+      document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
+    })
+    .catch(console.error)
 }
 
 const doGetErrorAsync = (client: ChattyHostConnection, id: string) => {
-  client.sendAndReceive(Actions.GET_ERROR_ASYNC).then((payload: any[]) => {
-    document.querySelector(`#got-title-${id}`)!.innerHTML = payload[0]
-  }).catch(error => {
-    document.querySelector(`#got-error-${id}`)!.innerHTML = 'error occured - see console'
-    console.error('error occured', error)
-  })
+  client
+    .sendAndReceive(Actions.GET_ERROR_ASYNC)
+    .then((payload: any[]) => {
+      document.querySelector(`#got-error-${id}`)!.innerHTML = payload[0]
+    })
+    .catch((error) => {
+      document.querySelector(`#got-error-${id}`)!.innerHTML =
+        'error occured - see console'
+      console.error('error occured', error)
+    })
+}
+
+const doAbortSendReceive = (client: ChattyHostConnection, id: string) => {
+  const abortController = new AbortController()
+  setTimeout(() => {
+    abortController.abort()
+  }, 100)
+  client
+    .sendAndReceive(Actions.GET_ERROR_ASYNC, { signal: abortController.signal })
+    .then((payload: any[]) => {
+      document.querySelector(`#got-abort-${id}`)!.innerHTML = payload[0]
+    })
+    .catch((error) => {
+      document.querySelector(`#got-abort-${id}`)!.innerHTML =
+        'error occured - see console'
+      console.error('error occured', error)
+    })
 }
 
 const bumpAndGet = () => {
@@ -56,12 +86,12 @@ const bumpAndGet = () => {
         counter += 1
         el.innerHTML = `${counter}`
         if (counter % 5 === 0) {
-          reject('When counter divisible by 5 an error is thrown')
+          reject(new Error('When counter divisible by 5 an error is thrown'))
           return
         }
         resolve(counter)
       } else {
-        reject('counter not found')
+        reject(new Error('counter not found'))
       }
     }, 250)
   })
@@ -81,16 +111,27 @@ document.addEventListener('DOMContentLoaded', () => {
     .withTargetOrigin(window.location.origin)
     .build()
     .connect()
-    .then(client => {
-      document.querySelector('#change-status')!.addEventListener('click', () => {
-        client.send(Actions.SET_STATUS, { status: 'Message to client 1' })
-      })
-      document.querySelector('#get-title-1')!.addEventListener('click', () => doGetTitle(client, 1))
-      document.querySelector('#get-title-1a')!.addEventListener('click', () => doGetTitleAsync(client, '1a'))
-      document.querySelector('#get-error-1a')!.addEventListener('click', () => doGetErrorAsync(client, '1a'))
+    .then((client) => {
+      document
+        .querySelector('#change-status')!
+        .addEventListener('click', () => {
+          client.send(Actions.SET_STATUS, { status: 'Message to client 1' })
+        })
+      document
+        .querySelector('#get-title-1')!
+        .addEventListener('click', () => doGetTitle(client, 1))
+      document
+        .querySelector('#get-title-1a')!
+        .addEventListener('click', () => doGetTitleAsync(client, '1a'))
+      document
+        .querySelector('#get-error-1a')!
+        .addEventListener('click', () => doGetErrorAsync(client, '1a'))
+      document
+        .querySelector('#do-abort-1')!
+        .addEventListener('click', () => doAbortSendReceive(client, '1'))
     })
     .catch(console.error)
-  Chatty.createHost('//localhost:8080/client.html')
+  Chatty.createHost('//localhost:8080/client2.html')
     .appendTo(document.querySelector('#div-2') as HTMLElement)
     .on(Actions.SET_STATUS, (msg: Msg) => {
       const status = document.querySelector('#host-status')!
@@ -103,13 +144,24 @@ document.addEventListener('DOMContentLoaded', () => {
     .withTargetOrigin(window.location.origin)
     .build()
     .connect()
-    .then(client => {
-      document.querySelector('#change-status')!.addEventListener('click', () => {
-        client.send(Actions.SET_STATUS, { status: 'Message to client 2' })
-      })
-      document.querySelector('#get-title-2')!.addEventListener('click', () => doGetTitle(client, 2))
-      document.querySelector('#get-title-2a')!.addEventListener('click', () => doGetTitleAsync(client, '2a'))
-      document.querySelector('#get-error-2a')!.addEventListener('click', () => doGetErrorAsync(client, '2a'))
+    .then((client) => {
+      document
+        .querySelector('#change-status')!
+        .addEventListener('click', () => {
+          client.send(Actions.SET_STATUS, { status: 'Message to client 2' })
+        })
+      document
+        .querySelector('#get-title-2')!
+        .addEventListener('click', () => doGetTitle(client, 2))
+      document
+        .querySelector('#get-title-2a')!
+        .addEventListener('click', () => doGetTitleAsync(client, '2a'))
+      document
+        .querySelector('#get-error-2a')!
+        .addEventListener('click', () => doGetErrorAsync(client, '2a'))
+      document
+        .querySelector('#do-abort-2')!
+        .addEventListener('click', () => doAbortSendReceive(client, '2'))
     })
     .catch(console.error)
 })

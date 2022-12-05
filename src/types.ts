@@ -39,6 +39,19 @@ export interface CallbackStore {
 }
 
 /**
+ * Options associated with a sendReceive request
+ */
+
+export interface Options {
+  /**
+   * Abort signal used to abort a request. If the signal is present
+   * the sendReceive request will never timeout.
+   */
+
+  signal: AbortSignal
+}
+
+/**
  * A container for generic methods
  *
  * @deprecated Replaced by [[ChattyHostConnection]] and [[ChattyClientConnection]]

@@ -25,7 +25,7 @@
  */
 
 import * as debugLib from 'debug'
-import type { CallbackStore, Receiver } from './types'
+import type { CallbackStore, Options, Receiver } from './types'
 import type { ChattyClientBuilder } from './client_builder'
 import { ChattyClientMessages } from './client_messages'
 import { ChattyHostMessages } from './host_messages'
@@ -59,11 +59,16 @@ export interface ChattyClientConnection {
 
   /**
    * Send a message to the host via a message channel, and then await a response. The event listener in
-   * the host returns a value or a promise that is resolved at some later point.
+   * the host returns a value or a promise that is resolved at some later point. This call will timeout
+   * if the default timeout is a positive number. An alternate mechanism is to pass in an options
+   * [[Options]] object as the last function parameter. In this scenerio, the default timeout is
+   * ignored. The caller can then implement their own timeout by utilizing the abort signal.
    *
    * @param eventName The name of the event to send to the host
    * @param payload Additional data to send to host. Restricted to transferable objects, ownership of the
    * object will be transferred to the host.
+   * @param options [[Options]]. Options can include an AbortController signal to allow request to be
+   *        cancelled. If signal is set, the defaultTimeout is ignored.
    * @returns A Promise that will resolve when the host event handler returns. The promise will reject
    * if no response is received within [[ChattyClientBuilder.withDefaultTimeout]] milliseconds. The
    * response will be an array containing all responses from any registered event handlers on the host.
@@ -142,7 +147,20 @@ export class ChattyClient {
                 })
               },
 
-              sendAndReceive: async (eventName: string, ...payload: any[]) => {
+              sendAndReceive: async (eventName: string, ..._payload: any[]) => {
+                let signal: AbortSignal | undefined
+                let payload: any[]
+                if (
+                  _payload.length > 0 &&
+                  _payload[_payload.length - 1].signal &&
+                  _payload[_payload.length - 1].signal instanceof AbortSignal
+                ) {
+                  const options: Options = _payload[_payload.length - 1]
+                  signal = options.signal
+                  payload = _payload.slice(0, _payload.length - 1)
+                } else {
+                  payload = _payload
+                }
                 const sequence = ++this._sequence
                 this.sendMsg(
                   ChattyClientMessages.MessageWithResponse,
@@ -151,11 +169,18 @@ export class ChattyClient {
                 )
                 return new Promise<any>((resolve, reject) => {
                   let timeoutId
-                  if (this._defaultTimeout > -1) {
-                    timeoutId = setTimeout(() => {
+                  if (signal) {
+                    signal.addEventListener('abort', () => {
                       delete this._receivers[sequence]
-                      reject(new Error('Timeout'))
-                    }, this._defaultTimeout)
+                      reject(new Error('Abort'))
+                    })
+                  } else {
+                    if (this._defaultTimeout > -1) {
+                      timeoutId = setTimeout(() => {
+                        delete this._receivers[sequence]
+                        reject(new Error('Timeout'))
+                      }, this._defaultTimeout)
+                    }
                   }
                   this._receivers[sequence] = { reject, resolve, timeoutId }
                 })
