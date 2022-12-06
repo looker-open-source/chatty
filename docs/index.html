@@ -52,7 +52,7 @@ the target function must return a Promise.</p>
 <a href="#sending-and-receiving-timeouts" id="sending-and-receiving-timeouts" style="color: inherit; text-decoration: none;">
   <h2>Sending and receiving timeouts</h2>
 </a>
-<p>By default, <code>sendAndReceive</code> will timeout and hrow an Error if a response is not received within the
+<p>By default, <code>sendAndReceive</code> will timeout and throw an Error if a response is not received within the
 time specifed by the builder <code>withDefaultTimeout</code> method which defaults to 30 seconds. <code>sendAndReceive</code>
 will NOT timeout if <code>withDefaultTimeout</code> is set to a negative number. Alternatively an <code>AbortSignal</code>
 can be added to an <code>Options</code> object passed as the last argument of the <code>sendAndReceive</code> call. In this
