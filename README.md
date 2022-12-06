@@ -149,7 +149,7 @@ Chatty.createClient()
 
 ## Sending and receiving timeouts
 
-By default, `sendAndReceive` will timeout and hrow an Error if a response is not received within the
+By default, `sendAndReceive` will timeout and throw an Error if a response is not received within the
 time specifed by the builder `withDefaultTimeout` method which defaults to 30 seconds. `sendAndReceive`
 will NOT timeout if `withDefaultTimeout` is set to a negative number. Alternatively an `AbortSignal`
 can be added to an `Options` object passed as the last argument of the `sendAndReceive` call. In this
