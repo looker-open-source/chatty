@@ -22,53 +22,66 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Chatty Demo</title>
-  <style>
-    iframe {
-      height: 200px;
-      width: 500px;
-    }
-  </style>
-  <script src="/demo.js"></script>
-</head>
-<body>
-  <h1>Chatty Demo Page</h1>
-  <button id="change-status">Host Action</button>
-  Status: <span id="host-status">Initialized - waiting for an event from a client</span>
-  <div id="host-target"></div>
-  <div style="padding: 10px 0">
-    Host Counter: <span id="host-counter">0</span>
-  </div>
-  <div style="padding: 10px 0">
-    <button id="get-title-1">Get Title</button>
-    <span id="got-title-1"></span>
-  </div>
-  <div style="padding: 10px 0">
-    <button id="get-title-1a">Get Title Asynchronously</button>
-    <span id="got-title-1a"></span>
-  </div>
-  <div style="padding: 10px 0">
-    <button id="get-error-1a">Get Error Asynchronously</button>
-    <span id="got-error-1a"></span>
-  </div>
-  <div id="div-1"></div>
-  <div style="padding: 10px 0">
-    <button id="get-title-2">Get Title</button>
-    <span id="got-title-2"></span>
-  </div>
-  <div style="padding: 10px 0">
-    <button id="get-title-2a">Get Title Asynchronously</button>
-    <span id="got-title-2a"></span>
-  </div>
-  <div style="padding: 10px 0">
-    <button id="get-error-2a">Get Error Asynchronously</button>
-    <span id="got-error-2a"></span>
-  </div>
-  <div id="div-2"></div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Chatty Demo</title>
+    <style>
+      iframe {
+        height: 250px;
+        width: 500px;
+      }
+    </style>
+    <script src="/demo.js"></script>
+  </head>
+  <body>
+    <h1>Chatty Demo Page</h1>
+    <button id="change-status">Host Action</button>
+    Status:
+    <span id="host-status"
+      >Initialized - waiting for an event from a client</span
+    >
+    <div id="host-target"></div>
+    <div style="padding: 10px 0">
+      Host Counter: <span id="host-counter">0</span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="get-title-1">Get Title</button>
+      <span id="got-title-1"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="get-title-1a">Get Title Asynchronously</button>
+      <span id="got-title-1a"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="get-error-1a">Get Error Asynchronously</button>
+      <span id="got-error-1a"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="do-abort-1">Abort send receive</button>
+      <span id="got-abort-1"></span>
+    </div>
+    <div id="div-1"></div>
+    <div style="padding: 10px 0">
+      <button id="get-title-2">Get Title</button>
+      <span id="got-title-2"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="get-title-2a">Get Title Asynchronously</button>
+      <span id="got-title-2a"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="get-error-2a">Get Error Asynchronously</button>
+      <span id="got-error-2a"></span>
+    </div>
+    <div style="padding: 10px 0">
+      <button id="do-abort-2">Abort send receive</button>
+      <span id="got-abort-2"></span>
+    </div>
+    <div id="div-2"></div>
+  </body>
 </html>

@@ -22,35 +22,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Page 2</title>
-  <script src="/demo_client.js"></script>
-  <style>
-    div {
-      padding-bottom: 5px;
-    }
-  </style>
-</head>
-<body>
-  <h2>Page 2</h2>
-  <div>
-    <button id="change-status">Client Action</button>
-  </div>
-  <div>
-    Status: <span id="client-status">Initialized - waiting for an event from the host</span>
-  </div>
-  <div>
-    <button id="bump-host-counter">Bump host counter asynchronously</button>
-  </div>
-  <div>
-    Host counter: <span id='host-counter'></span>
-  </div>
-  <div>
-    <a href="client.html">Navigate to Page 1</a>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Page 2</title>
+    <script src="/demo_client.js"></script>
+    <style>
+      div {
+        padding-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Page 2</h2>
+    <div>
+      <button id="change-status">Client Action</button>
+    </div>
+    <div>
+      Status:
+      <span id="client-status"
+        >Initialized - waiting for an event from the host</span
+      >
+    </div>
+    <div>
+      <button id="bump-host-counter">Bump host counter asynchronously</button>
+    </div>
+    <div>Host counter: <span id="host-counter"></span></div>
+    <div>
+      <button id="do-abort">Abort send receive</button>
+    </div>
+    <div>Abort result: <span id="got abort"></span></div>
+    <div>
+      <a href="client.html">Navigate to Page 1</a>
+    </div>
+  </body>
 </html>

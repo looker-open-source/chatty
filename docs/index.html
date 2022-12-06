@@ -1,345 +1,99 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@looker/chatty</title>
-	<meta name="description" content="">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">@looker/chatty</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
-			<h1> @looker/chatty</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#chatty" id="chatty" style="color: inherit; text-decoration: none;">
-					<h1>chatty</h1>
-				</a>
-				<p>A simple web browser <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe">iframe</a>
-					host/client channel message manager. It uses
-					<a href="https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel">MessageChannels</a>
-				to avoid cross-talk between multiple iframes. It allows configuring the iframe to run in sandboxed mode.</p>
-				<a href="#basic-use" id="basic-use" style="color: inherit; text-decoration: none;">
-					<h2>Basic use</h2>
-				</a>
-				<p>A user first initiates the creation of a client iframe using the <code>createHost(url)</code> method, adding event
-					handlers using <code>on(eventName, data)</code>. They then creates the iframe using <code>build()</code>, and opens
-					a communication channel using <code>connect()</code>. Once the channel opens, the user can send messages to
-				the client with <code>send(eventName, data)</code></p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@looker/chatty</title><meta name="description" content="Documentation for @looker/chatty"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@looker/chatty</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@looker/chatty </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#chatty" id="chatty" style="color: inherit; text-decoration: none;">
+  <h1>chatty</h1>
+</a>
+<p>A simple web browser <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe">iframe</a>
+host/client channel message manager. It uses
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/MessageChannel">MessageChannels</a>
+to avoid cross-talk between multiple iframes. It allows configuring the iframe to run in sandboxed mode.</p>
 
-  Chatty.createHost(<span class="hljs-string">'//example.com/client.html'</span>)
-    .on(Actions.SET_STATUS, <span class="hljs-function">(<span class="hljs-params">msg: Msg</span>) =&gt;</span> {
-      <span class="hljs-keyword">const</span> status: Element = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#host-status'</span>)!
-      status.innerHTML = <span class="hljs-string">`<span class="hljs-subst">${msg.status}</span> 1`</span>
-    })
-    .build()
-    .connect()
-    .then(<span class="hljs-function"><span class="hljs-params">client</span> =&gt;</span> {
-      <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#change-status'</span>)!.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-        client.send(Actions.SET_STATUS, { status: <span class="hljs-string">'Message to client 1'</span> })
-      })
-    })
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<p>The client iframe can also be created using source from the <code>createHostFromSource(source)</code> method.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#basic-use" id="basic-use" style="color: inherit; text-decoration: none;">
+  <h2>Basic use</h2>
+</a>
+<p>A user first initiates the creation of a client iframe using the <code>createHost(url)</code> method, adding event
+handlers using <code>on(eventName, data)</code>. They then creates the iframe using <code>build()</code>, and opens
+a communication channel using <code>connect()</code>. Once the channel opens, the user can send messages to
+the client with <code>send(eventName, data)</code></p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createHost</span><span class="hl-1">(</span><span class="hl-3">&#39;//example.com/client.html&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">  .</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">SET_STATUS</span><span class="hl-1">, (</span><span class="hl-2">msg</span><span class="hl-1">: </span><span class="hl-6">Msg</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">status</span><span class="hl-1">: </span><span class="hl-6">Element</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#host-status&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">    </span><span class="hl-2">status</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-3">`</span><span class="hl-7">${</span><span class="hl-2">msg</span><span class="hl-8">.</span><span class="hl-2">status</span><span class="hl-7">}</span><span class="hl-3"> 1`</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">client</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#change-status&#39;</span><span class="hl-1">)!.</span><span class="hl-4">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&#39;click&#39;</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-2">client</span><span class="hl-1">.</span><span class="hl-4">send</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">SET_STATUS</span><span class="hl-1">, { </span><span class="hl-2">status:</span><span class="hl-1"> </span><span class="hl-3">&#39;Message to client 1&#39;</span><span class="hl-1"> })</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
+<p>The client iframe can also be created using source from the <code>createHostFromSource(source)</code> method.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createHostFromSource</span><span class="hl-1">(</span><span class="hl-3">`</span><br/><span class="hl-3">      &lt;html&gt;</span><br/><span class="hl-3">        &lt;body&gt;</span><br/><span class="hl-3">          &lt;script src=&#39;//example.com/client.js&#39; type=&quot;application/javascript&quot; /&gt;</span><br/><span class="hl-3">        &lt;/body&gt;</span><br/><span class="hl-3">      &lt;/html&gt;</span><br/><span class="hl-3">  `</span><span class="hl-1">)</span>
+</code></pre>
+<p>The client <code>iframe</code> creates its client using <code>createClient()</code>. It also adds event listeners, builds the
+client and connects. Once connected, it can send messages to its host.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createClient</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">SET_STATUS</span><span class="hl-1">, (</span><span class="hl-2">msg</span><span class="hl-1">: </span><span class="hl-6">Msg</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">status</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#client-status&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">    </span><span class="hl-2">status</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-2">msg</span><span class="hl-1">.</span><span class="hl-2">status</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">host</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#change-status&#39;</span><span class="hl-1">)!.</span><span class="hl-4">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&#39;click&#39;</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-2">host</span><span class="hl-1">.</span><span class="hl-4">send</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">SET_STATUS</span><span class="hl-1">, { </span><span class="hl-2">status:</span><span class="hl-1"> </span><span class="hl-3">&#39;click from client&#39;</span><span class="hl-1"> })</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
 
-  Chatty.createHostFromSource(<span class="hljs-string">`
-      &lt;html&gt;
-        &lt;body&gt;
-          &lt;script src='//example.com/client.js' type="application/javascript" /&gt;
-        &lt;/body&gt;
-      &lt;/html&gt;
-  `</span>)</code></pre>
-				<p>The client <code>iframe</code> creates its client using <code>createClient()</code>. It also adds event listeners, builds the
-				client and connects. Once connected, it can send messages to its host.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#sending-and-receiving" id="sending-and-receiving" style="color: inherit; text-decoration: none;">
+  <h2>Sending and receiving</h2>
+</a>
+<p>Both the host and the client can send a message and wait for a response. The <code>sendAndReceive()</code> method
+returns a promise that is resolved with a values returned by the event listeners on the client or host.</p>
+<p>For example, a host can request that the client return its title.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createHost</span><span class="hl-1">(</span><span class="hl-3">&#39;//example.com/client.html&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">client</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#get-title&#39;</span><span class="hl-1">)!.</span><span class="hl-4">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&#39;click&#39;</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-2">client</span><span class="hl-1">.</span><span class="hl-4">sendAndReceive</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">).</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">payload</span><span class="hl-1">: </span><span class="hl-6">any</span><span class="hl-1">[]) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">title</span><span class="hl-1">: </span><span class="hl-6">Element</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#got-title&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">        </span><span class="hl-2">title</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-2">payload</span><span class="hl-1">[</span><span class="hl-9">0</span><span class="hl-1">]</span><br/><span class="hl-1">      })</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
+<p>The client simply returns the text value of its title in the event handler.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createClient</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">return</span><span class="hl-1"> </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;title&#39;</span><span class="hl-1">)!.</span><span class="hl-2">text</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
+<p>The results provided by the promise are an array because their may be multiple handlers for a given event. If there are no event handlers for a given action the array will be empty.</p>
 
-  Chatty.createClient()
-    .on(Actions.SET_STATUS, <span class="hljs-function">(<span class="hljs-params">msg: Msg</span>) =&gt;</span> {
-      <span class="hljs-keyword">const</span> status = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#client-status'</span>)!
-      status.innerHTML = msg.status
-    })
-    .build()
-    .connect()
-    .then(<span class="hljs-function"><span class="hljs-params">host</span> =&gt;</span> {
-      <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#change-status'</span>)!.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-        host.send(Actions.SET_STATUS, { status: <span class="hljs-string">'click from client'</span> })
-      })
-    })
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<a href="#sending-and-receiving" id="sending-and-receiving" style="color: inherit; text-decoration: none;">
-					<h2>Sending and receiving</h2>
-				</a>
-				<p>Both the host and the client can send a message and wait for a response. The <code>sendAndReceive()</code> method
-				returns a promise that is resolved with a values returned by the event listeners on the client or host.</p>
-				<p>For example, a host can request that the client return its title.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#sending-and-receiving-asynchronous-responses" id="sending-and-receiving-asynchronous-responses" style="color: inherit; text-decoration: none;">
+  <h2>Sending and receiving asynchronous responses</h2>
+</a>
+<p>The <code>sendAndReceive</code> method can also be used for data that needs to be retrieved asynchronously. In this scenario
+the target function must return a Promise.</p>
+<p>In the following example, the host requests that the client return some data that is to be retrieved asynchronously.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createHost</span><span class="hl-1">(</span><span class="hl-3">&#39;//example.com/client.html&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">client</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#get-title&#39;</span><span class="hl-1">)!.</span><span class="hl-4">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&#39;click&#39;</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-2">client</span><span class="hl-1">.</span><span class="hl-4">sendAndReceive</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">).</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">payload</span><span class="hl-1">: </span><span class="hl-6">any</span><span class="hl-1">[]) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">title</span><span class="hl-1">: </span><span class="hl-6">Element</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#got-title&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">        </span><span class="hl-2">title</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-2">payload</span><span class="hl-1">[</span><span class="hl-9">0</span><span class="hl-1">]</span><br/><span class="hl-1">      })</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
+<p>The client message handler returns a <code>Promise</code>.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createClient</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">return</span><span class="hl-1"> </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-6">Promise</span><span class="hl-1">((</span><span class="hl-2">resolve</span><span class="hl-1">, </span><span class="hl-2">reject</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-4">setTimeout</span><span class="hl-1">(() </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-4">resolve</span><span class="hl-1">(</span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;title&#39;</span><span class="hl-1">)!.</span><span class="hl-2">text</span><span class="hl-1">)</span><br/><span class="hl-1">      }, </span><span class="hl-9">200</span><span class="hl-1">)</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
 
-  Chatty.createHost(<span class="hljs-string">'//example.com/client.html'</span>)
-    .build()
-    .connect()
-    .then(<span class="hljs-function"><span class="hljs-params">client</span> =&gt;</span> {
-      <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#get-title'</span>)!.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-        client.sendAndReceive(Actions.GET_TITLE, <span class="hljs-function">(<span class="hljs-params">payload: <span class="hljs-built_in">any</span>[]</span>) =&gt;</span> {
-          <span class="hljs-keyword">const</span> title: Element = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#got-title'</span>)!
-          title.innerHTML = payload[<span class="hljs-number">0</span>]
-        }
-      })
-    })
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<p>The client simply returns the text value of its title in the event handler.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#sending-and-receiving-timeouts" id="sending-and-receiving-timeouts" style="color: inherit; text-decoration: none;">
+  <h2>Sending and receiving timeouts</h2>
+</a>
+<p>By default, <code>sendAndReceive</code> will timeout and throw an Error if a response is not received within the
+time specifed by the builder <code>withDefaultTimeout</code> method which defaults to 30 seconds. <code>sendAndReceive</code>
+will NOT timeout if <code>withDefaultTimeout</code> is set to a negative number. Alternatively an <code>AbortSignal</code>
+can be added to an <code>Options</code> object passed as the last argument of the <code>sendAndReceive</code> call. In this
+scenario the default timeout is ignored. The caller may then use the <code>AbortController</code> to terminate the
+<code>sendAndReceive</code> call.</p>
+<p>In following example, the error message will be displayed in the title because the timeout that fires the
+abort will trigger before the timeout that returns the title.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">abortController</span><span class="hl-1"> = </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-4">AbortController</span><span class="hl-1">()</span><br/><span class="hl-4">setTimeout</span><span class="hl-1">(() </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-2">abortController</span><span class="hl-1">.</span><span class="hl-4">abort</span><span class="hl-1">()</span><br/><span class="hl-1">}, </span><span class="hl-9">100</span><span class="hl-1">)</span><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createHost</span><span class="hl-1">(</span><span class="hl-3">&#39;//example.com/client.html&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">client</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#get-title&#39;</span><span class="hl-1">)!.</span><span class="hl-4">addEventListener</span><span class="hl-1">(</span><span class="hl-3">&#39;click&#39;</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-2">client</span><br/><span class="hl-1">        .</span><span class="hl-4">sendAndReceive</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">, { </span><span class="hl-2">signal:</span><span class="hl-1"> </span><span class="hl-2">abortController</span><span class="hl-1">.</span><span class="hl-2">signal</span><span class="hl-1"> })</span><br/><span class="hl-1">        .</span><span class="hl-4">then</span><span class="hl-1">((</span><span class="hl-2">payload</span><span class="hl-1">: </span><span class="hl-6">any</span><span class="hl-1">[]) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">          </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">title</span><span class="hl-1">: </span><span class="hl-6">Element</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#got-title&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">          </span><span class="hl-2">title</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-2">payload</span><span class="hl-1">[</span><span class="hl-9">0</span><span class="hl-1">]</span><br/><span class="hl-1">        })</span><br/><span class="hl-1">        .</span><span class="hl-4">catch</span><span class="hl-1">((</span><span class="hl-2">error</span><span class="hl-1">: </span><span class="hl-6">Error</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">          </span><span class="hl-7">const</span><span class="hl-1"> </span><span class="hl-5">title</span><span class="hl-1">: </span><span class="hl-6">Element</span><span class="hl-1"> = </span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;#got-title&#39;</span><span class="hl-1">)!</span><br/><span class="hl-1">          </span><span class="hl-2">title</span><span class="hl-1">.</span><span class="hl-2">innerHTML</span><span class="hl-1"> = </span><span class="hl-2">error</span><span class="hl-1">.</span><span class="hl-2">message</span><br/><span class="hl-1">        })</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
+<p>The client message handler returns a <code>Promise</code>.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">Chatty</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;chatty&#39;</span><br/><br/><span class="hl-2">Chatty</span><span class="hl-1">.</span><span class="hl-4">createClient</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">on</span><span class="hl-1">(</span><span class="hl-2">Actions</span><span class="hl-1">.</span><span class="hl-5">GET_TITLE</span><span class="hl-1">, () </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">return</span><span class="hl-1"> </span><span class="hl-7">new</span><span class="hl-1"> </span><span class="hl-6">Promise</span><span class="hl-1">((</span><span class="hl-2">resolve</span><span class="hl-1">, </span><span class="hl-2">reject</span><span class="hl-1">) </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">      </span><span class="hl-4">setTimeout</span><span class="hl-1">(() </span><span class="hl-7">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-4">resolve</span><span class="hl-1">(</span><span class="hl-2">document</span><span class="hl-1">.</span><span class="hl-4">querySelector</span><span class="hl-1">(</span><span class="hl-3">&#39;title&#39;</span><span class="hl-1">)!.</span><span class="hl-2">text</span><span class="hl-1">)</span><br/><span class="hl-1">      }, </span><span class="hl-9">200</span><span class="hl-1">)</span><br/><span class="hl-1">    })</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">  .</span><span class="hl-4">build</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">connect</span><span class="hl-1">()</span><br/><span class="hl-1">  .</span><span class="hl-4">catch</span><span class="hl-1">(</span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-2">error</span><span class="hl-1">)</span>
+</code></pre>
 
-  Chatty.createClient()
-    .on(Actions.GET_TITLE, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      <span class="hljs-keyword">return</span> <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'title'</span>)!.text
-    })
-    .build()
-    .connect()
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<p>The results provided by the promise are an array because their may be multiple handlers for a given event. If there are no event handlers for a given action the array will be empty.</p>
-				<a href="#sending-and-receiving-asynchronous-responses" id="sending-and-receiving-asynchronous-responses" style="color: inherit; text-decoration: none;">
-					<h2>Sending and receiving asynchronous responses</h2>
-				</a>
-				<p>The <code>sendAndReceive</code> method can also be used for data that needs to be retrieved asynchronously. In this scenario
-				the target function must return a Promise.</p>
-				<p>In the following example, the host requests that the client return some data that is to be retrieved asynchronously.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+  <h2>Getting Started</h2>
+</a>
+<ol>
+<li>Make sure you have node and npm versions installed per <code>package.json</code>&#39;s &quot;engines&quot; field.</li>
+<li><code>npm install</code></li>
+<li><code>npm test</code></li>
+<li><code>npm start</code></li>
+<li>Happy hacking!</li>
+</ol>
 
-  Chatty.createHost(<span class="hljs-string">'//example.com/client.html'</span>)
-    .build()
-    .connect()
-    .then(<span class="hljs-function"><span class="hljs-params">client</span> =&gt;</span> {
-      <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#get-title'</span>)!.addEventListener(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-        client.sendAndReceive(Actions.GET_TITLE, <span class="hljs-function">(<span class="hljs-params">payload: <span class="hljs-built_in">any</span>[]</span>) =&gt;</span> {
-          <span class="hljs-keyword">const</span> title: Element = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#got-title'</span>)!
-          title.innerHTML = payload[<span class="hljs-number">0</span>]
-        }
-      })
-    })
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<p>The client message handler returns a <code>Promise</code>.</p>
-				<pre><code class="language-typescript">  <span class="hljs-keyword">import</span> { Chatty } <span class="hljs-keyword">from</span> <span class="hljs-string">'chatty'</span>
+<a href="#repository-layout" id="repository-layout" style="color: inherit; text-decoration: none;">
+  <h2>Repository Layout</h2>
+</a>
+<ul>
+<li><code>/src</code> - This is where you should do all the work on Chatty.</li>
+<li><code>/lib</code> - This is the built output generated by running <code>npm run build</code>. No editing should be done here.</li>
+<li><code>/demo</code> - This is what is hosted by WebpackDevServer via <code>npm start</code>. Use this to build a demo and test Chatty in real time (no need to refresh the page manually or restart the dev server, it does that for you).</li>
+</ul>
 
-  Chatty.createClient()
-    .on(Actions.GET_TITLE, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
-        setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-          resolve(<span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'title'</span>)!.text)
-        }, <span class="hljs-number">200</span>)
-      })
-    })
-    .build()
-    .connect()
-    .catch(<span class="hljs-built_in">console</span>.error)</code></pre>
-				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
-					<h2>Getting Started</h2>
-				</a>
-				<ol>
-					<li>Make sure you have node and npm versions installed per <code>package.json</code>&#39;s &quot;engines&quot; field.</li>
-					<li><code>npm install</code></li>
-					<li><code>npm test</code></li>
-					<li><code>npm start</code></li>
-					<li>Happy hacking!</li>
-				</ol>
-				<a href="#repository-layout" id="repository-layout" style="color: inherit; text-decoration: none;">
-					<h2>Repository Layout</h2>
-				</a>
-				<ul>
-					<li><code>/src</code> - This is where you should do all the work on Chatty.</li>
-					<li><code>/lib</code> - This is the built output generated by running <code>npm run build</code>. No editing should be done here.</li>
-					<li><code>/demo</code> - This is what is hosted by WebpackDevServer via <code>npm start</code>. Use this to build a demo and test Chatty in real time (no need to refresh the page manually or restart the dev server, it does that for you).</li>
-				</ul>
-				<a href="#npm-commands" id="npm-commands" style="color: inherit; text-decoration: none;">
-					<h2>NPM Commands</h2>
-				</a>
-				<ul>
-					<li><code>npm run build</code> - runs the Typescript compiler, outputting all generated source files to <code>/lib</code>. Run this when creating a new build to distribute on github.</li>
-					<li><code>npm run lint</code> - runs the ts linter</li>
-					<li><code>npm run lint-fix</code> - runs the ts linter and attempts to auto fix problems</li>
-					<li><code>npm start</code> - starts a dev server mounted on <code>/demo</code>.</li>
-					<li><code>npm test</code> - runs the test suite for Chatty.</li>
-				</ul>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-is-private tsd-is-external">
-						<a href="enums/chattyclientmessages.html" class="tsd-kind-icon">Chatty<wbr>Client<wbr>Messages</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-is-private tsd-is-external">
-						<a href="enums/chattyclientstates.html" class="tsd-kind-icon">Chatty<wbr>Client<wbr>States</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-is-private tsd-is-external">
-						<a href="enums/chattyhostmessages.html" class="tsd-kind-icon">Chatty<wbr>Host<wbr>Messages</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-is-private tsd-is-external">
-						<a href="enums/chattyhoststates.html" class="tsd-kind-icon">Chatty<wbr>Host<wbr>States</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/chatty.html" class="tsd-kind-icon">Chatty</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/chattyclient.html" class="tsd-kind-icon">Chatty<wbr>Client</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/chattyclientbuilder.html" class="tsd-kind-icon">Chatty<wbr>Client<wbr>Builder</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/chattyhost.html" class="tsd-kind-icon">Chatty<wbr>Host</a>
-					</li>
-					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/chattyhostbuilder.html" class="tsd-kind-icon">Chatty<wbr>Host<wbr>Builder</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/callbackstore.html" class="tsd-kind-icon">Callback<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/chattyclientconnection.html" class="tsd-kind-icon">Chatty<wbr>Client<wbr>Connection</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/chattyhostconnection.html" class="tsd-kind-icon">Chatty<wbr>Host<wbr>Connection</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/methodstore.html" class="tsd-kind-icon">Method<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/receiver.html" class="tsd-kind-icon">Receiver</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-is-external">
-						<a href="globals.html#callback" class="tsd-kind-icon">Callback</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
-</body>
-</html>
+<a href="#npm-commands" id="npm-commands" style="color: inherit; text-decoration: none;">
+  <h2>NPM Commands</h2>
+</a>
+<ul>
+<li><code>npm run build</code> - runs the Typescript compiler, outputting all generated source files to <code>/lib</code>. Run this when creating a new build to distribute on github.</li>
+<li><code>npm run lint</code> - runs the ts linter</li>
+<li><code>npm run lint-fix</code> - runs the ts linter and attempts to auto fix problems</li>
+<li><code>npm start</code> - starts a dev server mounted on <code>/demo</code>.</li>
+<li><code>npm test</code> - runs the test suite for Chatty.</li>
+</ul>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-enum tsd-is-private"><a href="enums/ChattyClientMessages.html" class="tsd-kind-icon">Chatty<wbr/>Client<wbr/>Messages</a></li><li class="tsd-kind-enum tsd-is-private"><a href="enums/ChattyClientStates.html" class="tsd-kind-icon">Chatty<wbr/>Client<wbr/>States</a></li><li class="tsd-kind-enum tsd-is-private"><a href="enums/ChattyHostMessages.html" class="tsd-kind-icon">Chatty<wbr/>Host<wbr/>Messages</a></li><li class="tsd-kind-enum tsd-is-private"><a href="enums/ChattyHostStates.html" class="tsd-kind-icon">Chatty<wbr/>Host<wbr/>States</a></li><li class="tsd-kind-class"><a href="classes/Chatty.html" class="tsd-kind-icon">Chatty</a></li><li class="tsd-kind-class"><a href="classes/ChattyClient.html" class="tsd-kind-icon">Chatty<wbr/>Client</a></li><li class="tsd-kind-class"><a href="classes/ChattyClientBuilder.html" class="tsd-kind-icon">Chatty<wbr/>Client<wbr/>Builder</a></li><li class="tsd-kind-class"><a href="classes/ChattyHost.html" class="tsd-kind-icon">Chatty<wbr/>Host</a></li><li class="tsd-kind-class"><a href="classes/ChattyHostBuilder.html" class="tsd-kind-icon">Chatty<wbr/>Host<wbr/>Builder</a></li><li class="tsd-kind-interface"><a href="interfaces/CallbackStore.html" class="tsd-kind-icon">Callback<wbr/>Store</a></li><li class="tsd-kind-interface"><a href="interfaces/ChattyClientConnection.html" class="tsd-kind-icon">Chatty<wbr/>Client<wbr/>Connection</a></li><li class="tsd-kind-interface"><a href="interfaces/ChattyHostConnection.html" class="tsd-kind-icon">Chatty<wbr/>Host<wbr/>Connection</a></li><li class="tsd-kind-interface"><a href="interfaces/MethodStore.html" class="tsd-kind-icon">Method<wbr/>Store</a></li><li class="tsd-kind-interface"><a href="interfaces/Options.html" class="tsd-kind-icon">Options</a></li><li class="tsd-kind-interface"><a href="interfaces/Receiver.html" class="tsd-kind-icon">Receiver</a></li><li class="tsd-kind-type-alias"><a href="modules.html#Callback" class="tsd-kind-icon">Callback</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>

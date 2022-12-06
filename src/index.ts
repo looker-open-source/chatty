@@ -30,8 +30,15 @@ import { ChattyHostBuilder } from './host_builder'
 export { ChattyClientBuilder } from './client_builder'
 export { ChattyHostBuilder } from './host_builder'
 
-export { ChattyClient, ChattyClientConnection } from './client'
-export { ChattyHost, ChattyHostConnection } from './host'
+export {
+  ChattyClient,
+  ChattyClientConnection,
+  ChattyClientStates,
+} from './client'
+export { ChattyHost, ChattyHostConnection, ChattyHostStates } from './host'
+
+export { ChattyClientMessages } from './client_messages'
+export { ChattyHostMessages } from './host_messages'
 
 export * from './types'
 
