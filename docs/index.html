@@ -70,7 +70,7 @@ ignored as the request will be aborted before the timer triggers.</p>
 <a href="#sending-and-receiving-abort-propagation" id="sending-and-receiving-abort-propagation" style="color: inherit; text-decoration: none;">
   <h2>Sending and receiving abort propagation</h2>
 </a>
-<p>By default, if a signal provided to <code>sendAndReceive</code> and it is aborted, the signal is NOT
+<p>By default, if a signal is provided to <code>sendAndReceive</code> and it is aborted, the signal is NOT
 propagated to the message receiver. This behavior can be changed by setting <code>propagateSignal</code>
 to true in the <code>Options</code> object. When set, the target handler will receive an <code>AbortSignal</code>
 as the last argument of the handler.</p>
