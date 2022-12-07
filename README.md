@@ -207,7 +207,7 @@ Chatty.createClient()
 
 ## Sending and receiving abort propagation
 
-By default, if a signal provided to `sendAndReceive` and it is aborted, the signal is NOT
+By default, if a signal is provided to `sendAndReceive` and it is aborted, the signal is NOT
 propagated to the message receiver. This behavior can be changed by setting `propagateSignal`
 to true in the `Options` object. When set, the target handler will receive an `AbortSignal`
 as the last argument of the handler.
