@@ -426,6 +426,47 @@ describe('ChattyHost', () => {
             .catch(console.error)
         })
 
+        it('propagates sendAndReceive abort signals', function (done) {
+          const abortController = new AbortController()
+          connecting
+            .then((connection) => {
+              connection
+                .sendAndReceive(eventName, payload, {
+                  propagateSignal: true,
+                  signal: abortController.signal,
+                })
+                .then((_data) => {
+                  fail('should not succeed')
+                })
+                .catch((error) => {
+                  expect(error.message).toEqual('Abort')
+                  expect(host.sendMsg.calls.argsFor(2)[0]).toEqual(
+                    ChattyHostMessages.AbortMessage
+                  )
+                  expect(host.sendMsg.calls.argsFor(2)[1]).toEqual({
+                    eventName,
+                    payload: { reason: 'Abort' },
+                  })
+                  expect(host.sendMsg.calls.argsFor(2)[2]).toEqual(
+                    jasmine.any(Number)
+                  )
+                  done()
+                })
+              expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(
+                ChattyHostMessages.MessageWithResponse
+              )
+              expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({
+                eventName,
+                payload: [payload],
+              })
+              expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(
+                jasmine.any(Number)
+              )
+              abortController.abort()
+            })
+            .catch(console.error)
+        })
+
         it('sendAndReceive ignores invalid sequence numbers', function (done) {
           connecting
             .then((connection) => {
@@ -605,12 +646,42 @@ describe('ChattyHost', () => {
                 action: ChattyClientMessages.MessageWithResponse,
                 data: {
                   eventName: 'party',
-                  payload: payload,
+                  payload: [payload],
                   sequence: 1,
                 },
               })
               setTimeout(() => {
-                expect(danceAsync).toHaveBeenCalled()
+                expect(danceAsync).toHaveBeenCalledWith({ status: 'lit' })
+                expect(host.sendMsg).toHaveBeenCalledWith(
+                  ChattyHostMessages.Response,
+                  { eventName: 'party', payload: [{ lit: 'done' }] },
+                  1
+                )
+                done()
+              }, WAIT)
+            })
+            .catch(console.error)
+        })
+
+        it('should propagate signal handler', (done) => {
+          doHandshake()
+
+          connecting
+            .then(() => {
+              channel.port1.postMessage({
+                action: ChattyClientMessages.MessageWithResponse,
+                data: {
+                  eventName: 'party',
+                  payload: [payload],
+                  sequence: 1,
+                  signal: true,
+                },
+              })
+              setTimeout(() => {
+                expect(danceAsync).toHaveBeenCalledWith(
+                  { status: 'lit' },
+                  jasmine.any(AbortSignal)
+                )
                 expect(host.sendMsg).toHaveBeenCalledWith(
                   ChattyHostMessages.Response,
                   { eventName: 'party', payload: [{ lit: 'done' }] },
