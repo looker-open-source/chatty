@@ -63,7 +63,7 @@ const doGetErrorAsync = (client: ChattyHostConnection, id: string) => {
 const doAbortSendReceive = (client: ChattyHostConnection, id: string) => {
   const abortController = new AbortController()
   setTimeout(() => {
-    abortController.abort()
+    abortController.abort('100ms timeout')
   }, 100)
   client
     .sendAndReceive(Actions.GET_ERROR_ASYNC, { signal: abortController.signal })
@@ -72,6 +72,34 @@ const doAbortSendReceive = (client: ChattyHostConnection, id: string) => {
     })
     .catch((error) => {
       document.querySelector(`#got-abort-${id}`)!.innerHTML =
+        'error occured - see console'
+      console.error('error occured', error)
+    })
+}
+
+const doPropagateAbortSendReceive = (
+  client: ChattyHostConnection,
+  id: string
+) => {
+  const abortController = new AbortController()
+  setTimeout(() => {
+    abortController.abort('100ms timeout')
+  }, 100)
+  client
+    .sendAndReceive(
+      Actions.PROPAGATED_ABORT_SIGNAL,
+      { status: 'This message should not be displayed' },
+      {
+        propagateSignal: true,
+        signal: abortController.signal,
+      }
+    )
+    .then((payload: any[]) => {
+      document.querySelector(`#got-propagate-abort-${id}`)!.innerHTML =
+        payload[0]
+    })
+    .catch((error) => {
+      document.querySelector(`#got-propagate-abort-${id}`)!.innerHTML =
         'error occured - see console'
       console.error('error occured', error)
     })
@@ -107,6 +135,22 @@ document.addEventListener('DOMContentLoaded', () => {
     .on(Actions.BUMP_AND_GET_COUNTER_ASYNC, (msg: Msg) => {
       return bumpAndGet()
     })
+    .on(Actions.PROPAGATED_ABORT_SIGNAL, (msg: Msg, signal: AbortSignal) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          const status = document.querySelector('#host-status')!
+          status.innerHTML = msg.status
+          resolve(status.innerHTML)
+        }, 200)
+        signal.addEventListener('abort', (event) => {
+          clearTimeout(timeoutId)
+          const status = document.querySelector('#host-status')!
+          status.innerHTML = `Request aborted ${
+            (event.target as AbortSignal).reason
+          }`
+        })
+      })
+    })
     .frameBorder('1')
     .withTargetOrigin(window.location.origin)
     .build()
@@ -129,6 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document
         .querySelector('#do-abort-1')!
         .addEventListener('click', () => doAbortSendReceive(client, '1'))
+      document
+        .querySelector('#do-propagate-abort-1')!
+        .addEventListener('click', () =>
+          doPropagateAbortSendReceive(client, '1')
+        )
     })
     .catch(console.error)
   Chatty.createHost('//localhost:8080/client2.html')
@@ -139,6 +188,22 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .on(Actions.BUMP_AND_GET_COUNTER_ASYNC, (msg: Msg) => {
       return bumpAndGet()
+    })
+    .on(Actions.PROPAGATED_ABORT_SIGNAL, (msg: Msg, signal: AbortSignal) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          const status = document.querySelector('#host-status')!
+          status.innerHTML = msg.status
+          resolve(status.innerHTML)
+        }, 200)
+        signal.addEventListener('abort', (event) => {
+          clearTimeout(timeoutId)
+          const status = document.querySelector('#host-status')!
+          status.innerHTML = `Request aborted ${
+            (event.target as AbortSignal).reason
+          }`
+        })
+      })
     })
     .frameBorder('1')
     .withTargetOrigin(window.location.origin)
@@ -162,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document
         .querySelector('#do-abort-2')!
         .addEventListener('click', () => doAbortSendReceive(client, '2'))
+      document
+        .querySelector('#do-propagate-abort-2')!
+        .addEventListener('click', () =>
+          doPropagateAbortSendReceive(client, '2')
+        )
     })
     .catch(console.error)
 })
