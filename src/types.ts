@@ -39,14 +39,6 @@ export interface CallbackStore {
 }
 
 /**
- * A container for [[AbortController]] instances indexed by event name. and sequence
- */
-
-export interface AbortControllerStore {
-  [nameSequence: string]: AbortController
-}
-
-/**
  * Options associated with a sendReceive request
  */
 
@@ -57,12 +49,6 @@ export interface Options {
    */
 
   signal: AbortSignal
-
-  /**
-   * Propogate signal used to propagate a signal abort to the message
-   * receiver.
-   */
-  propagateSignal?: boolean
 }
 
 /**
