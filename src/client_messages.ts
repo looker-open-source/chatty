@@ -29,6 +29,8 @@
  * @private
  */
 
+// IMPORTANT - ALWAYS add new members at the END of the enum. Failure to do
+// so will break interaction with a different version of chatty.
 export enum ChattyClientMessages {
   /** First part of handshake message */
   Syn,
@@ -42,4 +44,6 @@ export enum ChattyClientMessages {
   Response,
   /** Asynchronous error response */
   ResponseError,
+  /** Abort message */
+  AbortMessage,
 }

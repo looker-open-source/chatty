@@ -51,6 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200)
       })
     })
+    .on(Actions.PROPAGATED_ABORT_SIGNAL, (msg: Msg, signal: AbortSignal) => {
+      return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          const status = document.querySelector('#client-status')!
+          status.innerHTML = msg.status
+          resolve(status.innerHTML)
+        }, 200)
+        signal.addEventListener('abort', (event) => {
+          clearTimeout(timeoutId)
+          const status = document.querySelector('#client-status')!
+          status.innerHTML = `Request aborted ${
+            (event.target as AbortSignal).reason
+          }`
+        })
+      })
+    })
+
     .withTargetOrigin(window.location.origin)
     .build()
     .connect()
@@ -75,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('#do-abort')!.addEventListener('click', () => {
         const abortController = new AbortController()
         setTimeout(() => {
-          abortController.abort()
+          abortController.abort('150ms timeout')
         }, 150)
         host
           .sendAndReceive(Actions.BUMP_AND_GET_COUNTER_ASYNC, {
@@ -85,9 +102,35 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#got-abort')!.innerHTML = payload[0]
           })
           .catch((error: any) => {
+            console.error(error)
             document.querySelector('#got-abort')!.innerHTML = error
           })
       })
+      document
+        .querySelector('#do-propagate-abort')!
+        .addEventListener('click', () => {
+          const abortController = new AbortController()
+          setTimeout(() => {
+            abortController.abort('150ms timeout')
+          }, 150)
+          host
+            .sendAndReceive(
+              Actions.PROPAGATED_ABORT_SIGNAL,
+              { status: 'This message should not be displayed' },
+              {
+                propagateSignal: true,
+                signal: abortController.signal,
+              }
+            )
+            .then((payload: any[]) => {
+              document.querySelector('#got-propagate-abort')!.innerHTML =
+                payload[0]
+            })
+            .catch((error: any) => {
+              console.error(error)
+              document.querySelector('#got-propagate-abort')!.innerHTML = error
+            })
+        })
     })
     .catch(console.error)
 })
