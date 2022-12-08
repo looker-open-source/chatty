@@ -186,8 +186,7 @@ Chatty.createHost('//example.com/client.html')
   .catch(console.error)
 ```
 
-The client message handler returns a `Promise` but its response will be
-ignored as the request will be aborted before the timer triggers.
+The client message handler returns a `Promise`.
 
 ```typescript
 import { Chatty } from 'chatty'
@@ -198,64 +197,6 @@ Chatty.createClient()
       setTimeout(() => {
         resolve(document.querySelector('title')!.text)
       }, 200)
-    })
-  })
-  .build()
-  .connect()
-  .catch(console.error)
-```
-
-## Sending and receiving abort propagation
-
-By default, if a signal is provided to `sendAndReceive` and it is aborted, the signal is NOT
-propagated to the message receiver. This behavior can be changed by setting `propagateSignal`
-to true in the `Options` object. When set, the target handler will receive an `AbortSignal`
-as the last argument of the handler.
-
-This example demonstrates the use of `propagateSignal`.
-
-```typescript
-const abortController = new AbortController()
-setTimeout(() => {
-  abortController.abort('100ms timeout')
-}, 100)
-client
-  .sendAndReceive(
-    Actions.PROPAGATED_ABORT_SIGNAL,
-    { status: 'This message should not be displayed' },
-    {
-      signal: abortController.signal,
-      propagateSignal: true,
-    }
-  )
-  .then((payload: any[]) => {
-    document.querySelector(`#got-propagate-abort-${id}`)!.innerHTML = payload[0]
-  })
-  .catch((error) => {
-    document.querySelector(`#got-propagate-abort-${id}`)!.innerHTML =
-      'error occured - see console'
-    console.error('error occured', error)
-  })
-```
-
-Notice how the message receiver clears the timer if an `AbortSignal` is received.
-
-```typescript
-Chatty.createClient()
-  .on(Actions.PROPAGATED_ABORT_SIGNAL, (msg: Msg, signal: AbortSignal) => {
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        const status = document.querySelector('#client-status')!
-        status.innerHTML = msg.status
-        resolve(status.innerHTML)
-      }, 200)
-      signal.addEventListener('abort', (event) => {
-        clearTimeout(timeoutId)
-        const status = document.querySelector('#client-status')!
-        status.innerHTML = `Request aborted ${
-          (event.target as AbortSignal).reason
-        }`
-      })
     })
   })
   .build()

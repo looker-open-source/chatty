@@ -31,6 +31,4 @@ export class Actions {
   public static readonly GET_ERROR_ASYNC = 'get error async '
   public static readonly BUMP_AND_GET_COUNTER_ASYNC =
     'bump and get counter async '
-
-  public static readonly PROPAGATED_ABORT_SIGNAL = 'propagated abort signal '
 }

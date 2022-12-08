@@ -25,12 +25,7 @@
  */
 
 import * as debugLib from 'debug'
-import type {
-  AbortControllerStore,
-  CallbackStore,
-  Options,
-  Receiver,
-} from './types'
+import type { CallbackStore, Options, Receiver } from './types'
 import type { ChattyClientBuilder } from './client_builder'
 import { ChattyClientMessages } from './client_messages'
 import { ChattyHostMessages } from './host_messages'
@@ -95,7 +90,6 @@ export class ChattyClient {
   private _channel: MessageChannel
   private _hostWindow = this._clientWindow.parent
   private _handlers: CallbackStore
-  private _abortControllers: AbortControllerStore
   private _targetOrigin: string
   private _state = ChattyClientStates.Connecting
   private _defaultTimeout: number
@@ -109,7 +103,6 @@ export class ChattyClient {
 
   constructor(builder: ChattyClientBuilder) {
     this._handlers = builder.handlers
-    this._abortControllers = {}
     this._targetOrigin = builder.targetOrigin
     this._defaultTimeout = builder.defaultTimeout
     this._channel = new MessageChannel()
@@ -156,7 +149,6 @@ export class ChattyClient {
 
               sendAndReceive: async (eventName: string, ..._payload: any[]) => {
                 let signal: AbortSignal | undefined
-                let propagateSignal: boolean | undefined
                 let payload: any[]
                 if (
                   _payload.length > 0 &&
@@ -165,7 +157,6 @@ export class ChattyClient {
                 ) {
                   const options: Options = _payload[_payload.length - 1]
                   signal = options.signal
-                  propagateSignal = options.propagateSignal
                   payload = _payload.slice(0, _payload.length - 1)
                 } else {
                   payload = _payload
@@ -174,29 +165,14 @@ export class ChattyClient {
                 this.sendMsg(
                   ChattyClientMessages.MessageWithResponse,
                   { eventName, payload },
-                  sequence,
-                  propagateSignal
+                  sequence
                 )
                 return new Promise<any>((resolve, reject) => {
                   let timeoutId
                   if (signal) {
-                    signal.addEventListener('abort', (event) => {
-                      let errorMessage = (event.target as AbortSignal).reason
-                      if (typeof errorMessage !== 'string') {
-                        errorMessage = 'Abort'
-                      }
-                      if (propagateSignal) {
-                        this.sendMsg(
-                          ChattyClientMessages.AbortMessage,
-                          {
-                            eventName,
-                            payload: { reason: errorMessage },
-                          },
-                          sequence
-                        )
-                      }
+                    signal.addEventListener('abort', () => {
                       delete this._receivers[sequence]
-                      reject(new Error(errorMessage))
+                      reject(new Error('Abort'))
                     })
                   } else {
                     if (this._defaultTimeout > -1) {
@@ -220,34 +196,15 @@ export class ChattyClient {
             break
           case ChattyHostMessages.MessageWithResponse:
             {
-              const { eventName, payload, sequence, signal } = evt.data.data
+              const { eventName, payload, sequence } = evt.data.data
               let results = []
-              const abortStoreName = `${eventName}${sequence}`
               if (this._handlers[eventName]) {
-                let _payload: any[]
-                if (signal) {
-                  this._abortControllers[abortStoreName] = new AbortController()
-                  if (Array.isArray(payload)) {
-                    _payload = [
-                      ...payload,
-                      this._abortControllers[abortStoreName].signal,
-                    ]
-                  } else {
-                    _payload = [
-                      payload,
-                      this._abortControllers[abortStoreName].signal,
-                    ]
-                  }
-                } else {
-                  _payload = payload
-                }
                 results = this._handlers[eventName].map((fn) =>
-                  fn.apply(this, _payload)
+                  fn.apply(this, payload)
                 )
               }
               Promise.all(results)
                 .then((resolvedResults) => {
-                  delete this._abortControllers[abortStoreName]
                   this.sendMsg(
                     ChattyClientMessages.Response,
                     { eventName, payload: resolvedResults },
@@ -255,23 +212,12 @@ export class ChattyClient {
                   )
                 })
                 .catch((error) => {
-                  delete this._abortControllers[abortStoreName]
                   this.sendMsg(
                     ChattyClientMessages.ResponseError,
                     { eventName, payload: error.toString() },
                     sequence
                   )
                 })
-            }
-            break
-          case ChattyHostMessages.AbortMessage:
-            {
-              const { eventName, payload, sequence } = evt.data.data
-              const abortStoreName = `${eventName}${sequence}`
-              if (this._abortControllers[abortStoreName]) {
-                this._abortControllers[abortStoreName].abort(payload?.reason)
-                delete this._abortControllers[abortStoreName]
-              }
             }
             break
           case ChattyHostMessages.Response:
@@ -325,13 +271,10 @@ export class ChattyClient {
   private sendMsg(
     action: ChattyClientMessages,
     data: any = {},
-    sequence?: number,
-    propagateSignal?: boolean
+    sequence?: number
   ) {
     const sequenceData = sequence ? { sequence } : {}
-    const signalData =
-      propagateSignal === true ? { signal: propagateSignal } : {}
-    const dataWithSequence = { ...data, ...sequenceData, ...signalData }
+    const dataWithSequence = { ...data, ...sequenceData }
     ChattyClient._debug('sending', action, dataWithSequence)
     this._channel.port1.postMessage({ action, data: dataWithSequence })
   }
