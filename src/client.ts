@@ -152,8 +152,8 @@ export class ChattyClient {
                 let payload: any[]
                 if (
                   _payload.length > 0 &&
-                  _payload[_payload.length - 1].signal &&
-                  _payload[_payload.length - 1].signal instanceof AbortSignal
+                  _payload[_payload.length - 1]?.signal &&
+                  _payload[_payload.length - 1]?.signal instanceof AbortSignal
                 ) {
                   const options: Options = _payload[_payload.length - 1]
                   signal = options.signal

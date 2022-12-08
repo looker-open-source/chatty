@@ -365,6 +365,35 @@ describe('ChattyHost', () => {
             .catch(console.error)
         })
 
+        it('sendAndReceive function sends a message with an undefined payload and returns a promise that resolves on response', function (done) {
+          connecting
+            .then((connection) => {
+              connection
+                .sendAndReceive(eventName, undefined)
+                .then((data) => {
+                  expect(data).toEqual([{ message: 'Hello' }])
+                  done()
+                })
+                .catch(console.error)
+              expect(host.sendMsg.calls.argsFor(1)[0]).toEqual(
+                ChattyHostMessages.MessageWithResponse
+              )
+              expect(host.sendMsg.calls.argsFor(1)[1]).toEqual({
+                eventName,
+                payload: [undefined],
+              })
+              expect(host.sendMsg.calls.argsFor(1)[2]).toEqual(
+                jasmine.any(Number)
+              )
+              const sequence = host.sendMsg.calls.argsFor(1)[2]
+              channel.port1.postMessage({
+                action: ChattyClientMessages.Response,
+                data: { eventName, payload: [{ message: 'Hello' }], sequence },
+              })
+            })
+            .catch(console.error)
+        })
+
         it('sendAndReceive function sends a message with options and options not treated as payload', function (done) {
           connecting
             .then((connection) => {
