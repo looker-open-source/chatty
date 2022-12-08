@@ -1,6 +1,6 @@
 {
   "name": "@looker/chatty",
-  "version": "2.3.7",
+  "version": "2.3.9",
   "description": "A simple postMessage host / client channel manager.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
