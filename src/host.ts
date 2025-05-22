@@ -127,6 +127,9 @@ export class ChattyHost {
     } else {
       console.warn('url or source required to initialize Chatty host correctly')
     }
+    if (builder.ariaLabel) {
+      this.iframe.ariaLabel = builder.ariaLabel
+    }
     this._appendTo = builder.el
     this._handlers = builder.handlers
     this._abortControllers = {}

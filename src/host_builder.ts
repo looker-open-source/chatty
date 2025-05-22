@@ -39,6 +39,7 @@ export class ChattyHostBuilder {
   private _frameBorder = '0'
   private _targetOrigin: string | null = null
   private _defaultTimeout = 30000
+  private _ariaLabel: string | null = null
 
   /** @hidden */
   constructor(private _url?: string, private _source?: string) {}
@@ -73,6 +74,10 @@ export class ChattyHostBuilder {
 
   get defaultTimeout() {
     return this._defaultTimeout
+  }
+
+  get ariaLabel() {
+    return this._ariaLabel
   }
 
   /**
@@ -184,6 +189,17 @@ export class ChattyHostBuilder {
 
   withTargetOrigin(targetOrigin: string) {
     this._targetOrigin = targetOrigin
+    return this
+  }
+
+  /**
+   * Aria label for IFRAME
+   *
+   * @param ariaLabel
+   */
+
+  withAriaLabel(ariaLabel: string) {
+    this._ariaLabel = ariaLabel
     return this
   }
 

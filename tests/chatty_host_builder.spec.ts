@@ -139,6 +139,11 @@ describe('ChattyHostBuilder', () => {
     expect(host.targetOrigin).toEqual('*')
   })
 
+  it('should set aria label', () => {
+    const host = Chatty.createHost(url).withAriaLabel('chatty iframe')
+    expect(host.ariaLabel).toEqual('chatty iframe')
+  })
+
   it('should apply multiple values', () => {
     const element = document.body
     const host = Chatty.createHost(url)
