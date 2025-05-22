@@ -828,5 +828,10 @@ describe('ChattyHost', () => {
         .build()
       expect(host.iframe.allow).toEqual('geolocation; serial')
     })
+
+    it('should apply aria label', () => {
+      host = Chatty.createHost(url).withAriaLabel('chatty host iframe').build()
+      expect(host.iframe.ariaLabel).toEqual('chatty host iframe')
+    })
   })
 })
