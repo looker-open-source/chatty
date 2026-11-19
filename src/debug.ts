@@ -54,7 +54,7 @@ const getRawConfig = (): string => {
       typeof window !== 'undefined' &&
       window.localStorage &&
       window.localStorage.getItem('debug')
-    if (stored) {
+    if (typeof stored === 'string') {
       rawConfig = stored
       return stored
     }
