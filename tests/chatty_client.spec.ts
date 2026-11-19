@@ -26,6 +26,7 @@
 
 import { Chatty } from '../src/index'
 import { ChattyClientMessages } from '../src/client_messages'
+import { createDebug } from '../src/debug'
 import { ChattyHostMessages } from '../src/host_messages'
 import type { ChattyClientConnection } from '../src/client'
 import { ChattyClientStates } from '../src/client'
@@ -630,6 +631,68 @@ describe('ChattyClient', function () {
             .catch(console.error)
         })
       })
+    })
+  })
+
+  describe('createDebug', function () {
+    afterEach(() => {
+      window.localStorage.removeItem('debug')
+    })
+
+    it('logs only when localStorage.debug matches namespace pattern', function () {
+      const infoSpy = spyOn(console, 'info')
+      const log = createDebug('looker:chatty:client')
+      expect(log.namespace).toEqual('looker:chatty:client')
+      expect(log.enabled).toEqual(false)
+      log('silent')
+      expect(infoSpy).not.toHaveBeenCalled()
+
+      window.localStorage.setItem('debug', 'other:*,looker:chatty:*')
+      expect(log.enabled).toEqual(true)
+      log('active', 123)
+      expect(infoSpy).toHaveBeenCalledTimes(1)
+      const callArgs = infoSpy.calls.mostRecent().args
+      expect(callArgs[0]).toEqual('looker:chatty:client active')
+      expect(callArgs[1]).toEqual(123)
+      expect(callArgs[2]).toMatch(/^\+\d+ms$/)
+    })
+
+    it('supports negative exclusion patterns overriding wildcard inclusions', function () {
+      const infoSpy = spyOn(console, 'info')
+      const clientLog = createDebug('looker:chatty:client')
+      const hostLog = createDebug('looker:chatty:host')
+
+      window.localStorage.setItem('debug', '*,-looker:chatty:host')
+      expect(clientLog.enabled).toEqual(true)
+      expect(hostLog.enabled).toEqual(false)
+
+      hostLog('suppressed')
+      expect(infoSpy).not.toHaveBeenCalled()
+
+      clientLog('allowed')
+      expect(infoSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('supports printf-style format specifiers', function () {
+      const infoSpy = spyOn(console, 'info')
+      window.localStorage.setItem('debug', 'looker:fmt')
+      const log = createDebug('looker:fmt')
+      log(
+        'hello %s count=%d int=%i float=%f json=%j obj=%o literal=%%',
+        'world',
+        42,
+        '9.8',
+        '3.5',
+        { a: 1 },
+        { b: 2 },
+        'extra'
+      )
+      const callArgs = infoSpy.calls.mostRecent().args
+      expect(callArgs[0]).toEqual(
+        'looker:fmt hello world count=42 int=9 float=3.5 json={"a":1} obj={"b":2} literal=%'
+      )
+      expect(callArgs[1]).toEqual('extra')
+      expect(callArgs[2]).toMatch(/^\+\d+ms$/)
     })
   })
 })

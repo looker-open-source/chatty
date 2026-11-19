@@ -24,7 +24,6 @@
 
  */
 
-import * as debugLib from 'debug'
 import type {
   AbortControllerStore,
   CallbackStore,
@@ -33,8 +32,8 @@ import type {
 } from './types'
 import type { ChattyClientBuilder } from './client_builder'
 import { ChattyClientMessages } from './client_messages'
+import { createDebug } from './debug'
 import { ChattyHostMessages } from './host_messages'
-import 'es6-promise/auto' // Polyfill only browsers without Promises
 
 /**
  * @private
@@ -88,7 +87,7 @@ export interface ChattyClientConnection {
  */
 
 export class ChattyClient {
-  private static _debug = debugLib('looker:chatty:client')
+  private static _debug = createDebug('looker:chatty:client')
 
   private _clientWindow = window
   private _connection: Promise<ChattyClientConnection> | null = null

@@ -1,6 +1,6 @@
 {
   "name": "@looker/chatty",
-  "version": "2.3.10",
+  "version": "2.4.0",
   "description": "A simple postMessage host / client channel manager.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -39,7 +39,6 @@
     "@babel/core": "^7.16.7",
     "@looker/eslint-config-oss": "^1.7.21",
     "@looker/eslint-plugin": "^1.0.0",
-    "@types/debug": "^4.1.5",
     "@types/jasmine": "^3.10.3",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/typescript-estree": "^5.9.1",
@@ -63,11 +62,7 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.7.3"
   },
-  "dependencies": {
-    "core-js": "^3.6.4",
-    "debug": "^2.2.0",
-    "es6-promise": "^4.2.8"
-  },
+  "dependencies": {},
   "eslintConfig": {
     "extends": [
       "@looker/eslint-config-oss"
