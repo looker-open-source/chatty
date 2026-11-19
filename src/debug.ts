@@ -104,13 +104,6 @@ const formatDuration = (ms: number): string => {
   return `${ms}ms`
 }
 
-const FORMATTERS: Record<string, (v: any) => unknown> = {
-  d: Number,
-  f: (v) => parseFloat(String(v)),
-  i: (v) => parseInt(String(v), 10),
-  s: String,
-}
-
 export const createDebug = (namespace: string): Debugger => {
   let prevTime: number | undefined
 
@@ -128,19 +121,7 @@ export const createDebug = (namespace: string): Debugger => {
 
     const out = args.slice()
     if (typeof out[0] === 'string') {
-      out[0] = `${namespace} ${out[0].replace(/%([%sdifjoO])/g, (match, s) => {
-        if (s === '%') return '%'
-        if (out.length <= 1) return match
-        const val = out.splice(1, 1)[0]
-        if (s in FORMATTERS) return String(FORMATTERS[s](val))
-        if (val instanceof Error) return val.stack || val.message
-        if (typeof val !== 'object' || val === null) return String(val)
-        try {
-          return JSON.stringify(val)
-        } catch {
-          return '[Circular]'
-        }
-      })}`
+      out[0] = `${namespace} ${out[0]}`
     } else {
       out.unshift(namespace)
     }

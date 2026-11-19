@@ -680,30 +680,20 @@ describe('ChattyClient', function () {
       expect(infoSpy).toHaveBeenCalledTimes(1)
     })
 
-    it('supports printf-style format specifiers', function () {
+    it('supports printf-style format specifiers via native console formatting', function () {
       const infoSpy = spyOn(console, 'info')
       window.localStorage.setItem('debug', 'looker:fmt')
       resetCache()
       const log = createDebug('looker:fmt')
       const err = new Error('boom')
-      err.stack = 'Error: boom'
-      log(
-        'hello %s count=%d int=%i float=%f json=%j obj=%o err=%o literal=%%',
-        'world',
-        42,
-        '9.8',
-        '3.5',
-        { a: 1 },
-        { b: 2 },
-        err,
-        'extra'
-      )
+      log('hello %s count=%d obj=%o', 'world', 42, err, 'extra')
       const callArgs = infoSpy.calls.mostRecent().args
-      expect(callArgs[0]).toEqual(
-        'looker:fmt hello world count=42 int=9 float=3.5 json={"a":1} obj={"b":2} err=Error: boom literal=%'
-      )
-      expect(callArgs[1]).toEqual('extra')
-      expect(callArgs[2]).toMatch(/^\+\d+ms$/)
+      expect(callArgs[0]).toEqual('looker:fmt hello %s count=%d obj=%o')
+      expect(callArgs[1]).toEqual('world')
+      expect(callArgs[2]).toEqual(42)
+      expect(callArgs[3]).toBe(err)
+      expect(callArgs[4]).toEqual('extra')
+      expect(callArgs[5]).toMatch(/^\+\d+ms$/)
     })
   })
 })
