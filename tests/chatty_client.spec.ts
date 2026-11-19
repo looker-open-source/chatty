@@ -26,7 +26,7 @@
 
 import { Chatty } from '../src/index'
 import { ChattyClientMessages } from '../src/client_messages'
-import { createDebug } from '../src/debug'
+import { createDebug, resetCache } from '../src/debug'
 import { ChattyHostMessages } from '../src/host_messages'
 import type { ChattyClientConnection } from '../src/client'
 import { ChattyClientStates } from '../src/client'
@@ -635,8 +635,13 @@ describe('ChattyClient', function () {
   })
 
   describe('createDebug', function () {
+    beforeEach(() => {
+      resetCache()
+    })
+
     afterEach(() => {
       window.localStorage.removeItem('debug')
+      resetCache()
     })
 
     it('logs only when localStorage.debug matches namespace pattern', function () {
@@ -648,6 +653,7 @@ describe('ChattyClient', function () {
       expect(infoSpy).not.toHaveBeenCalled()
 
       window.localStorage.setItem('debug', 'other:*,looker:chatty:*')
+      resetCache()
       expect(log.enabled).toEqual(true)
       log('active', 123)
       expect(infoSpy).toHaveBeenCalledTimes(1)
@@ -663,6 +669,7 @@ describe('ChattyClient', function () {
       const hostLog = createDebug('looker:chatty:host')
 
       window.localStorage.setItem('debug', '*,-looker:chatty:host')
+      resetCache()
       expect(clientLog.enabled).toEqual(true)
       expect(hostLog.enabled).toEqual(false)
 
@@ -676,20 +683,24 @@ describe('ChattyClient', function () {
     it('supports printf-style format specifiers', function () {
       const infoSpy = spyOn(console, 'info')
       window.localStorage.setItem('debug', 'looker:fmt')
+      resetCache()
       const log = createDebug('looker:fmt')
+      const err = new Error('boom')
+      err.stack = 'Error: boom'
       log(
-        'hello %s count=%d int=%i float=%f json=%j obj=%o literal=%%',
+        'hello %s count=%d int=%i float=%f json=%j obj=%o err=%o literal=%%',
         'world',
         42,
         '9.8',
         '3.5',
         { a: 1 },
         { b: 2 },
+        err,
         'extra'
       )
       const callArgs = infoSpy.calls.mostRecent().args
       expect(callArgs[0]).toEqual(
-        'looker:fmt hello world count=42 int=9 float=3.5 json={"a":1} obj={"b":2} literal=%'
+        'looker:fmt hello world count=42 int=9 float=3.5 json={"a":1} obj={"b":2} err=Error: boom literal=%'
       )
       expect(callArgs[1]).toEqual('extra')
       expect(callArgs[2]).toMatch(/^\+\d+ms$/)

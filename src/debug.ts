@@ -32,7 +32,13 @@ export interface Debugger {
   readonly enabled: boolean
 }
 
+let rawConfig: string | undefined
 let cache: [string, RegExp[], RegExp[]] | undefined
+
+export const resetCache = (): void => {
+  rawConfig = undefined
+  cache = undefined
+}
 
 const toRegex = (pattern: string): RegExp =>
   new RegExp(
@@ -40,18 +46,24 @@ const toRegex = (pattern: string): RegExp =>
   )
 
 const getRawConfig = (): string => {
+  if (rawConfig !== undefined) return rawConfig
   try {
     const stored =
       typeof window !== 'undefined' &&
       window.localStorage &&
       window.localStorage.getItem('debug')
-    if (stored) return stored
+    if (stored) {
+      rawConfig = stored
+      return stored
+    }
   } catch {
     // Ignore storage SecurityError in sandboxed iframes
   }
   try {
-    return (typeof process !== 'undefined' && process?.env?.DEBUG) || ''
+    rawConfig = (typeof process !== 'undefined' && process?.env?.DEBUG) || ''
+    return rawConfig
   } catch {
+    rawConfig = ''
     return ''
   }
 }
@@ -121,6 +133,7 @@ export const createDebug = (namespace: string): Debugger => {
         if (out.length <= 1) return match
         const val = out.splice(1, 1)[0]
         if (s in FORMATTERS) return String(FORMATTERS[s](val))
+        if (val instanceof Error) return val.stack || val.message
         if (typeof val !== 'object' || val === null) return String(val)
         try {
           return JSON.stringify(val)
