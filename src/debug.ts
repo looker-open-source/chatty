@@ -34,10 +34,12 @@ export interface Debugger {
 
 let rawConfig: string | undefined
 let cache: [string, RegExp[], RegExp[]] | undefined
+const enabledCache = new Map<string, boolean>()
 
 export const resetCache = (): void => {
   rawConfig = undefined
   cache = undefined
+  enabledCache.clear()
 }
 
 const toRegex = (pattern: string): RegExp =>
@@ -69,8 +71,15 @@ const getRawConfig = (): string => {
 }
 
 export const isDebugEnabled = (namespace: string): boolean => {
+  const cachedResult = enabledCache.get(namespace)
+  if (cachedResult !== undefined) return cachedResult
+
   const raw = getRawConfig()
-  if (!raw) return false
+  if (!raw) {
+    if (enabledCache.size >= 256) enabledCache.clear()
+    enabledCache.set(namespace, false)
+    return false
+  }
   if (!cache || cache[0] !== raw) {
     const names: RegExp[] = []
     const skips: RegExp[] = []
@@ -84,10 +93,12 @@ export const isDebugEnabled = (namespace: string): boolean => {
     }
     cache = [raw, names, skips]
   }
-  return (
+  const enabled =
     !cache[2].some((re) => re.test(namespace)) &&
     cache[1].some((re) => re.test(namespace))
-  )
+  if (enabledCache.size >= 256) enabledCache.clear()
+  enabledCache.set(namespace, enabled)
+  return enabled
 }
 
 const UNITS: Array<[number, string]> = [
