@@ -640,26 +640,26 @@ describe('ChattyClient', function () {
     })
 
     it('logs only when localStorage.debug matches namespace pattern', function () {
-      const infoSpy = spyOn(console, 'info')
+      const debugSpy = spyOn(console, 'debug')
       const silentLog = createDebug('looker:chatty:client')
       expect(silentLog.namespace).toEqual('looker:chatty:client')
       expect(silentLog.enabled).toEqual(false)
       silentLog('silent')
-      expect(infoSpy).not.toHaveBeenCalled()
+      expect(debugSpy).not.toHaveBeenCalled()
 
       window.localStorage.setItem('debug', 'other:*,looker:chatty:*')
       const activeLog = createDebug('looker:chatty:client')
       expect(activeLog.enabled).toEqual(true)
       activeLog('active', 123)
-      expect(infoSpy).toHaveBeenCalledTimes(1)
-      const callArgs = infoSpy.calls.mostRecent().args
+      expect(debugSpy).toHaveBeenCalledTimes(1)
+      const callArgs = debugSpy.calls.mostRecent().args
       expect(callArgs[0]).toEqual('looker:chatty:client active')
       expect(callArgs[1]).toEqual(123)
       expect(callArgs[2]).toMatch(/^\+\d+ms$/)
     })
 
     it('supports negative exclusion patterns overriding wildcard inclusions', function () {
-      const infoSpy = spyOn(console, 'info')
+      const debugSpy = spyOn(console, 'debug')
       window.localStorage.setItem('debug', '*,-looker:chatty:host')
       const clientLog = createDebug('looker:chatty:client')
       const hostLog = createDebug('looker:chatty:host')
@@ -667,19 +667,19 @@ describe('ChattyClient', function () {
       expect(hostLog.enabled).toEqual(false)
 
       hostLog('suppressed')
-      expect(infoSpy).not.toHaveBeenCalled()
+      expect(debugSpy).not.toHaveBeenCalled()
 
       clientLog('allowed')
-      expect(infoSpy).toHaveBeenCalledTimes(1)
+      expect(debugSpy).toHaveBeenCalledTimes(1)
     })
 
     it('supports printf-style format specifiers via native console formatting', function () {
-      const infoSpy = spyOn(console, 'info')
+      const debugSpy = spyOn(console, 'debug')
       window.localStorage.setItem('debug', 'looker:fmt')
       const log = createDebug('looker:fmt')
       const err = new Error('boom')
       log('hello %s count=%d obj=%o', 'world', 42, err, 'extra')
-      const callArgs = infoSpy.calls.mostRecent().args
+      const callArgs = debugSpy.calls.mostRecent().args
       expect(callArgs[0]).toEqual('looker:fmt hello %s count=%d obj=%o')
       expect(callArgs[1]).toEqual('world')
       expect(callArgs[2]).toEqual(42)

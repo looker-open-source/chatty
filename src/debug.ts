@@ -103,8 +103,8 @@ export const createDebug = (namespace: string): Debugger => {
           out.unshift(namespace)
         }
         out.push(diffLabel)
-        // package.json eslintConfig "no-console" allows info/warn/error (disallows console.log).
-        console.info(...out)
+        // eslint-disable-next-line no-console
+        console.debug(...out)
       }
     : (): void => {
         // Disabled namespace no-op
