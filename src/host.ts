@@ -24,17 +24,16 @@
 
  */
 
-import * as debugLib from 'debug'
 import type {
   AbortControllerStore,
   CallbackStore,
   Options,
   Receiver,
 } from './types'
-import type { ChattyHostBuilder } from './host_builder'
 import { ChattyClientMessages } from './client_messages'
+import { createDebug } from './debug'
+import type { ChattyHostBuilder } from './host_builder'
 import { ChattyHostMessages } from './host_messages'
-import 'es6-promise/auto' // Polyfill only browsers without Promises
 
 /**
  * @private
@@ -88,7 +87,7 @@ export interface ChattyHostConnection {
  */
 
 export class ChattyHost {
-  private static _debug = debugLib('looker:chatty:host')
+  private static _debug = createDebug('looker:chatty:host')
 
   /**
    * The underlying iframe element

@@ -26,6 +26,7 @@
 
 import { Chatty } from '../src/index'
 import { ChattyClientMessages } from '../src/client_messages'
+import { createDebug } from '../src/debug'
 import { ChattyHostMessages } from '../src/host_messages'
 import type { ChattyClientConnection } from '../src/client'
 import { ChattyClientStates } from '../src/client'
@@ -630,6 +631,61 @@ describe('ChattyClient', function () {
             .catch(console.error)
         })
       })
+    })
+  })
+
+  describe('createDebug', function () {
+    afterEach(() => {
+      window.localStorage.removeItem('debug')
+    })
+
+    it('logs only when localStorage.debug matches namespace pattern', function () {
+      const debugSpy = spyOn(console, 'debug')
+      const silentLog = createDebug('looker:chatty:client')
+      expect(silentLog.namespace).toEqual('looker:chatty:client')
+      expect(silentLog.enabled).toEqual(false)
+      silentLog('silent')
+      expect(debugSpy).not.toHaveBeenCalled()
+
+      window.localStorage.setItem('debug', 'other:*,looker:chatty:*')
+      const activeLog = createDebug('looker:chatty:client')
+      expect(activeLog.enabled).toEqual(true)
+      activeLog('active', 123)
+      expect(debugSpy).toHaveBeenCalledTimes(1)
+      const callArgs = debugSpy.calls.mostRecent().args
+      expect(callArgs[0]).toEqual('looker:chatty:client active')
+      expect(callArgs[1]).toEqual(123)
+      expect(callArgs[2]).toMatch(/^\+\d+ms$/)
+    })
+
+    it('supports negative exclusion patterns overriding wildcard inclusions', function () {
+      const debugSpy = spyOn(console, 'debug')
+      window.localStorage.setItem('debug', '*,-looker:chatty:host')
+      const clientLog = createDebug('looker:chatty:client')
+      const hostLog = createDebug('looker:chatty:host')
+      expect(clientLog.enabled).toEqual(true)
+      expect(hostLog.enabled).toEqual(false)
+
+      hostLog('suppressed')
+      expect(debugSpy).not.toHaveBeenCalled()
+
+      clientLog('allowed')
+      expect(debugSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('supports printf-style format specifiers via native console formatting', function () {
+      const debugSpy = spyOn(console, 'debug')
+      window.localStorage.setItem('debug', 'looker:fmt')
+      const log = createDebug('looker:fmt')
+      const err = new Error('boom')
+      log('hello %s count=%d obj=%o', 'world', 42, err, 'extra')
+      const callArgs = debugSpy.calls.mostRecent().args
+      expect(callArgs[0]).toEqual('looker:fmt hello %s count=%d obj=%o')
+      expect(callArgs[1]).toEqual('world')
+      expect(callArgs[2]).toEqual(42)
+      expect(callArgs[3]).toBe(err)
+      expect(callArgs[4]).toEqual('extra')
+      expect(callArgs[5]).toMatch(/^\+\d+ms$/)
     })
   })
 })
