@@ -32,73 +32,43 @@ export interface Debugger {
   readonly enabled: boolean
 }
 
-let rawConfig: string | undefined
-let cache: [string, RegExp[], RegExp[]] | undefined
-const enabledCache = new Map<string, boolean>()
-
-export const resetCache = (): void => {
-  rawConfig = undefined
-  cache = undefined
-  enabledCache.clear()
-}
-
 const toRegex = (pattern: string): RegExp =>
   new RegExp(
     `^${pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`
   )
 
 const getRawConfig = (): string => {
-  if (rawConfig !== undefined) return rawConfig
   try {
     const stored =
       typeof window !== 'undefined' &&
       window.localStorage &&
       window.localStorage.getItem('debug')
-    if (typeof stored === 'string') {
-      rawConfig = stored
-      return stored
-    }
+    if (typeof stored === 'string') return stored
   } catch {
     // Ignore storage SecurityError in sandboxed iframes
   }
   try {
-    rawConfig = (typeof process !== 'undefined' && process?.env?.DEBUG) || ''
-    return rawConfig
+    return (typeof process !== 'undefined' && process?.env?.DEBUG) || ''
   } catch {
-    rawConfig = ''
     return ''
   }
 }
 
 export const isDebugEnabled = (namespace: string): boolean => {
-  const cachedResult = enabledCache.get(namespace)
-  if (cachedResult !== undefined) return cachedResult
-
   const raw = getRawConfig()
-  if (!raw) {
-    if (enabledCache.size >= 256) enabledCache.clear()
-    enabledCache.set(namespace, false)
-    return false
-  }
-  if (!cache || cache[0] !== raw) {
-    const names: RegExp[] = []
-    const skips: RegExp[] = []
-    for (const token of raw.split(/[\s,]+/)) {
-      if (!token) continue
-      if (token[0] === '-') {
-        if (token.length > 1) skips.push(toRegex(token.slice(1)))
-      } else {
-        names.push(toRegex(token))
+  if (!raw) return false
+  let matched = false
+  for (const token of raw.split(/[\s,]+/)) {
+    if (!token) continue
+    if (token[0] === '-') {
+      if (token.length > 1 && toRegex(token.slice(1)).test(namespace)) {
+        return false
       }
+    } else if (!matched && toRegex(token).test(namespace)) {
+      matched = true
     }
-    cache = [raw, names, skips]
   }
-  const enabled =
-    !cache[2].some((re) => re.test(namespace)) &&
-    cache[1].some((re) => re.test(namespace))
-  if (enabledCache.size >= 256) enabledCache.clear()
-  enabledCache.set(namespace, enabled)
-  return enabled
+  return matched
 }
 
 const UNITS: Array<[number, string]> = [
@@ -116,32 +86,32 @@ const formatDuration = (ms: number): string => {
 }
 
 export const createDebug = (namespace: string): Debugger => {
+  // Evaluate once at logger creation (matching debug@2) so disabled calls are a zero-cost no-op.
+  const enabled = isDebugEnabled(namespace)
   let prevTime: number | undefined
 
-  const debugFn = (...args: any[]): void => {
-    if (!isDebugEnabled(namespace)) return
+  const debugFn = enabled
+    ? (...args: any[]): void => {
+        const now = Date.now()
+        const diffLabel = `+${formatDuration(now - (prevTime ?? now))}`
+        prevTime = now
 
-    const now = Date.now()
-    const diffLabel = `+${formatDuration(now - (prevTime ?? now))}`
-    prevTime = now
-
-    if (args.length === 0) {
-      console.info(`${namespace} ${diffLabel}`)
-      return
-    }
-
-    const out = args.slice()
-    if (typeof out[0] === 'string') {
-      out[0] = `${namespace} ${out[0]}`
-    } else {
-      out.unshift(namespace)
-    }
-    out.push(diffLabel)
-    console.info(...out)
-  }
+        const out = args.slice()
+        if (typeof out[0] === 'string') {
+          out[0] = `${namespace} ${out[0]}`
+        } else {
+          out.unshift(namespace)
+        }
+        out.push(diffLabel)
+        // package.json eslintConfig "no-console" allows info/warn/error (disallows console.log).
+        console.info(...out)
+      }
+    : (): void => {
+        // Disabled namespace no-op
+      }
 
   Object.defineProperties(debugFn, {
-    enabled: { enumerable: true, get: () => isDebugEnabled(namespace) },
+    enabled: { enumerable: true, value: enabled },
     namespace: { enumerable: true, value: namespace },
   })
 

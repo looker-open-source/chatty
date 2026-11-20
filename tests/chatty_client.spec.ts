@@ -26,7 +26,7 @@
 
 import { Chatty } from '../src/index'
 import { ChattyClientMessages } from '../src/client_messages'
-import { createDebug, resetCache } from '../src/debug'
+import { createDebug } from '../src/debug'
 import { ChattyHostMessages } from '../src/host_messages'
 import type { ChattyClientConnection } from '../src/client'
 import { ChattyClientStates } from '../src/client'
@@ -635,27 +635,22 @@ describe('ChattyClient', function () {
   })
 
   describe('createDebug', function () {
-    beforeEach(() => {
-      resetCache()
-    })
-
     afterEach(() => {
       window.localStorage.removeItem('debug')
-      resetCache()
     })
 
     it('logs only when localStorage.debug matches namespace pattern', function () {
       const infoSpy = spyOn(console, 'info')
-      const log = createDebug('looker:chatty:client')
-      expect(log.namespace).toEqual('looker:chatty:client')
-      expect(log.enabled).toEqual(false)
-      log('silent')
+      const silentLog = createDebug('looker:chatty:client')
+      expect(silentLog.namespace).toEqual('looker:chatty:client')
+      expect(silentLog.enabled).toEqual(false)
+      silentLog('silent')
       expect(infoSpy).not.toHaveBeenCalled()
 
       window.localStorage.setItem('debug', 'other:*,looker:chatty:*')
-      resetCache()
-      expect(log.enabled).toEqual(true)
-      log('active', 123)
+      const activeLog = createDebug('looker:chatty:client')
+      expect(activeLog.enabled).toEqual(true)
+      activeLog('active', 123)
       expect(infoSpy).toHaveBeenCalledTimes(1)
       const callArgs = infoSpy.calls.mostRecent().args
       expect(callArgs[0]).toEqual('looker:chatty:client active')
@@ -665,11 +660,9 @@ describe('ChattyClient', function () {
 
     it('supports negative exclusion patterns overriding wildcard inclusions', function () {
       const infoSpy = spyOn(console, 'info')
+      window.localStorage.setItem('debug', '*,-looker:chatty:host')
       const clientLog = createDebug('looker:chatty:client')
       const hostLog = createDebug('looker:chatty:host')
-
-      window.localStorage.setItem('debug', '*,-looker:chatty:host')
-      resetCache()
       expect(clientLog.enabled).toEqual(true)
       expect(hostLog.enabled).toEqual(false)
 
@@ -683,7 +676,6 @@ describe('ChattyClient', function () {
     it('supports printf-style format specifiers via native console formatting', function () {
       const infoSpy = spyOn(console, 'info')
       window.localStorage.setItem('debug', 'looker:fmt')
-      resetCache()
       const log = createDebug('looker:fmt')
       const err = new Error('boom')
       log('hello %s count=%d obj=%o', 'world', 42, err, 'extra')
